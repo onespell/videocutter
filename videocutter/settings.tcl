@@ -3,7 +3,7 @@ namespace eval setting {
 
 	variable locale en # en ru
 	variable numOfProcessors 16
-	variable initialDir "/home/onespell/Downloads"
+	variable initialDir "/home"
 	variable logPath "/tmp/vc.log"
 	variable mplayerPath "/usr/bin/mplayer"
 	variable ffprobePath "/usr/bin/ffprobe"
