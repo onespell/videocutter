@@ -30,6 +30,13 @@ namespace eval jobBox {
 		set runBtn [button $frame1.button -text [mc run] -command jobBox::run]
 
 		bind $list "<Delete>" jobBox::onDelete
+		bind $list "<Double-1>" {
+			set selected [$jobBox::list curselection]
+			set idx [lindex $selected 0]
+			set job [lindex $jobBox::items $idx]
+			set t [job::getTime $job]
+			mediabar::goTo $t
+		}
 
 		pack $dryRunChk -side left
 		pack $runBtn -side left -fill x -expand true
@@ -120,7 +127,7 @@ namespace eval jobBox {
 		if {$setting::ffmpegReport eq "on"} {
 			lappend cmd "-report"
 		}
-		lappend cmd "-threads" $numOfThreads "-i" {*}$sourceFile "-ss" [util::toTimeCode [job::getStart $job]] "-to" [util::toTimeCode [job::getFinish $job]]
+		lappend cmd "-threads" $numOfThreads "-i" {*}$sourceFile "-ss" [util::toTimeCode [job::getTime $job]] "-to" [util::toTimeCode [job::getFinish $job]]
 		set frameSize [job::getSize $job]
 		if {$frameSize eq ""} {
 			lappend cmd "-c" "copy"
@@ -191,7 +198,7 @@ namespace eval jobBox {
 		if {$type eq $job::shotJobType} {
 			set result [format "<%s> %s" [util::toTimeCode [job::getTime $job]] [job::getFormat $job]]
 		} elseif {$type eq $job::clipJobType} {
-			set result [format "\[%s-%s\]" [util::toTimeCode [job::getStart $job]] [util::toTimeCode [job::getFinish $job]]]
+			set result [format "\[%s-%s\]" [util::toTimeCode [job::getTime $job]] [util::toTimeCode [job::getFinish $job]]]
 			set size [job::getSize $job]
 			if {$size ne ""} {
 				append result " "
@@ -223,7 +230,7 @@ namespace eval jobBox {
 			variable videoPrefix
 			variable audioPrefix
 			variable noSound
-			set result [format "%s %s-%s" $clipJobPrefix [util::toTimeCode [job::getStart $job]] [util::toTimeCode [job::getFinish $job]]]
+			set result [format "%s %s-%s" $clipJobPrefix [util::toTimeCode [job::getTime $job]] [util::toTimeCode [job::getFinish $job]]]
 			set size [job::getSize $job]
 			if {$size ne ""} {
 				append result " "

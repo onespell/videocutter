@@ -1,12 +1,11 @@
 namespace eval job {
-	namespace export shotJobType clipJobType getJobType getFormat getTime getStart getFinish getSize getVideo getAudio newShotJob newClipJob
+	namespace export shotJobType clipJobType getJobType getFormat getTime getFinish getSize getVideo getAudio newShotJob newClipJob
 
 	variable shotJobType "f"
 	variable clipJobType "s"
 	variable typeIndex "typ"
 	variable formatIndex "fmt"
 	variable timeIndex "t"
-	variable startIndex "b"
 	variable finishIndex "e"
 	variable sizeIndex "sz"
 	variable videoIndex "v"
@@ -39,17 +38,12 @@ namespace eval job {
 		variable clipJobType
 		variable typeIndex
 		variable formatIndex
-		variable startIndex
+		variable timeIndex
 		variable finishIndex
 		variable sizeIndex
 		variable videoIndex
 		variable audioIndex
-		return [dict create $typeIndex $clipJobType $startIndex $start $finishIndex $finish $formatIndex $format $sizeIndex $size $videoIndex $video $audioIndex $audio]
-	}
-
-	proc getStart {job} {
-		variable startIndex
-		return [dict get $job $startIndex]
+		return [dict create $typeIndex $clipJobType $timeIndex $start $finishIndex $finish $formatIndex $format $sizeIndex $size $videoIndex $video $audioIndex $audio]
 	}
 
 	proc getFinish {job} {

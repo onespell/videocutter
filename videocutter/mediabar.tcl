@@ -1,5 +1,5 @@
 namespace eval mediabar {
-	namespace export init frame setDuration setTime reset
+	namespace export init frame setDuration setTime reset goTo
 
 	variable frame
 	variable pauseBtn
