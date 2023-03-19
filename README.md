@@ -12,3 +12,12 @@ How to use:
 * At the end use menu File -> Quit (Ctrl-Q) to quit.
 
 ![vc](https://user-images.githubusercontent.com/764089/226156443-a2a9e73f-037d-43c0-a8af-b0a20a6fcc2f.png)
+* 1 - play/pause
+* 2 - go to next/previous key frame
+* 3 - volume control
+* 4 - mute/unmute
+* 5 - take a frame
+* 6 - take a clip
+* 7 - input jobs manually (the same syntax as in log file)
+* 8 - jobs list
+* 9 - execute jobs (check "dry run" to just view corresponding ffmpeg commands)
