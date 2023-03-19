@@ -38,8 +38,11 @@ namespace eval clipBox {
 		variable audioBox
 		variable formatBox
 		set sizeBox [ttk::combobox $frame.size -textvariable clipBox::size]
+		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set audioBox [ttk::combobox $frame.audio -textvariable clipBox::audio]
+		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set formatBox [ttk::combobox $frame.format -textvariable clipBox::format -values $setting::videoFormats]
+		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set cutBtn [button $frame.cut -text [mc cut] -command {jobBox::add [clipBox::newJob]}]
 
 		pack $aBtn -side left
@@ -167,5 +170,9 @@ namespace eval clipBox {
 			}
 		}
 		$audioBox config -values $listValues
+	}
+
+	proc onSelect {w} {
+		focus $mediabar::frame
 	}
 }
