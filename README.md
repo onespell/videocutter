@@ -1,7 +1,7 @@
 # videocutter
 This is an application for taking clips or frames from video file. It is written in Tcl/Tk and uses mplayer and ffmpeg under the hood.
 
-How to install:
+## How to install
 * Prerequisites: ffmpeg (https://ffmpeg.org), ffprobe (https://ffmpeg.org/ffprobe.html), MPlayer (http://www.mplayerhq.hu), tcl 8.6, tk 8.6, tksvg (https://wiki.tcl-lang.org/page/tksvg), BWidget (https://wiki.tcl-lang.org/page/BWidget).
 * Copy directory "videocutter" to any place on local file system.
 * Correct file settings.tcl:
@@ -17,7 +17,7 @@ How to install:
   * muteOnStart - "true" to mute on file opening
 * To launch videocutter execute vc.tcl (or you can edit and use script vc.sh).
 
-How to use:
+## How to use
 * Launch application without arguments (or with a video file name as the argument).
 * Use menu File -> Open (Ctrl-O) to open video file.
 * At the end use menu File -> Quit (Ctrl-Q) to quit.
@@ -32,3 +32,9 @@ How to use:
 * 7 - input jobs manually (the same syntax as in log file)
 * 8 - jobs list
 * 9 - execute jobs (check "dry run" to just view corresponding ffmpeg commands)
+
+## Files
+* vc.tcl - the main tcl script
+* settings.tcl - application settings
+* l10n/ - localization data
+* svg/ - icons
