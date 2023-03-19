@@ -22,7 +22,7 @@ This is an application for taking clips or frames from video file. It is written
 * Use menu File -> Open (Ctrl-O) to open video file.
 * Navigating through the video, use tools on the right panel to create jobs.
 * Also you can manually import jobs from text lines (the same syntax as in the application log file).
-* To edit the job list, you can select and delete jobs pressing <Delete>.
+* To edit the job list, you can select and delete jobs pressing Delete.
 * Press the "run" button to execute jobs. Images and clips will be created near the source file.
 * At the end use menu File -> Quit (Ctrl-Q) to quit.
 
