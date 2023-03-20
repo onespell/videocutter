@@ -77,9 +77,9 @@ namespace eval analysis {
 	}
 
 	proc getKeyFrames {filePath} {
-		set result [dts::getKeyFrames $filePath]
+		set result [pts::getKeyFrames $filePath]
 		if {[llength $result] == 0 || [lindex $result 0] != 0} {
-			set candidate [pts::getKeyFrames $filePath]
+			set candidate [dts::getKeyFrames $filePath]
 			if {[llength $result] == 0 || [lindex $candidate 0] == 0} {
 				set result $candidate
 			}
