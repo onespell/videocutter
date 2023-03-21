@@ -103,9 +103,11 @@ namespace eval jobBox {
 				lappend cmd "-q:v" 90 "-lossless" 0 "-compression_level" 6 "-loop" 0 "-preset" "picture"
 			}
 			default {
+				# quality level, from 1 (best) to 31 (worst)
 				lappend cmd "-q:v" 2
 			}
 		}
+		lappend cmd "-y"
 		lappend cmd $resultFile
 		if {$dryRun} {
 			return $cmd
