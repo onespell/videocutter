@@ -19,7 +19,6 @@ namespace eval analysis {
 				set gcd [util::gcd $width $height]
 				set ratio [format "%d:%d" [expr int($width / $gcd)] [expr int($height / $gcd)]]
 			}
-			puts $ratio
 			break
 		}
 		set result {}

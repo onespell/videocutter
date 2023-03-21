@@ -47,7 +47,7 @@ namespace eval mplayer {
 		lassign [chan pipe] outReadChanId outWriteChanId
 		lassign [chan pipe] inReadChanId inWriteChanId
 		fconfigure $inWriteChanId -buffersize 0
-		set pid [exec >@$outWriteChanId <@$inReadChanId $mplayerPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $aFilePath &]
+		set pid [exec >&@$outWriteChanId <@$inReadChanId $mplayerPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $aFilePath &]
 		fileevent $outReadChanId readable [list mplayer::readOutput $outReadChanId]
 		pause
 		set time 0
