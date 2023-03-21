@@ -100,7 +100,7 @@ namespace eval jobBox {
 		lappend cmd "-i" {*}$sourceFile "-ss" $t "-frames:v" 1
 		switch -exact -- $format {
 			WEBP {
-				lappend cmd "-q:v" 90 "-lossless" 0 "-compression_level" 6 "-loop" 0 "-preset" "picture"
+				lappend cmd "-q:v" 80 "-lossless" 0 "-compression_level" 6 "-loop" 0 "-preset" "picture"
 			}
 			default {
 				# Normal range for JPEG is 2-31 with 31 being the worst 
