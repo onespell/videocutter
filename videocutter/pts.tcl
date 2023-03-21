@@ -10,7 +10,7 @@ namespace eval pts {
 		set result {}
 		set finished "n"
 		set numOfThreads [util::numOfFfprobeThreads]
-		set input [open "| $setting::ffprobePath -threads $numOfThreads -select_streams v -skip_frame nokey -show_frames -show_entries frame=pts_time -of csv=p=0 -v quiet $filePath" r]
+		set input [open "| $setting::ffprobePath -threads $numOfThreads -select_streams v -show_packets -show_entries packet=pts_time,flags -of csv=p=0 -v quiet $filePath" r]
 		fileevent $input readable [list pts::read $input]
 		vwait pts::finished
 		if {[util::isNotValid $result]} {
@@ -27,18 +27,16 @@ namespace eval pts {
 			return
 		}
 		gets $pipe line
-		set p [string first "," $line]
-		if {$p < 0} {
-			set s $line
-		} else {
-			set s [string range $line 0 [expr $p - 1]]
+		set split [split $line ","]
+		set flag [string range [lindex $split 1] 0 0]
+		if {$flag ne "K"} {
+			return
 		}
-		if {[string length $s] > 0} {
-			if {[catch {set millis [util::toMillis $s]} r]} {
-				return
-			}
-			variable result
-			lappend result $millis
+		set s [lindex $split 0]
+		if {[string length $s] <= 0 || [catch {set millis [util::toMillis $s]} r]} {
+			return
 		}
+		variable result
+		lappend result $millis
 	}
 }
