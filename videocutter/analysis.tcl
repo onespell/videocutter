@@ -78,12 +78,13 @@ namespace eval analysis {
 
 	proc getKeyFrames {filePath} {
 		set result [pts::getKeyFrames $filePath]
+		if {[llength $result] == 0} {
 		#if {[llength $result] == 0 || [lindex $result 0] != 0} {
-		#	set candidate [dts::getKeyFrames $filePath]
-		#	if {[llength $result] == 0 || [lindex $candidate 0] == 0} {
-		#		set result $candidate
-		#	}
-		#}
+			set candidate [dts::getKeyFrames $filePath]
+			if {[llength $result] == 0 || [lindex $candidate 0] == 0} {
+				set result $candidate
+			}
+		}
 		if {[llength $result] == 0} {
 			tk_messageBox -type ok -icon error -message [mc noKeyFrames]
 		}
