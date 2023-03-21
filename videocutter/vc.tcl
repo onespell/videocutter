@@ -42,7 +42,7 @@ pack $player::frame -side right -fill both -expand true
 
 mplayer::init $setting::mplayerPath
 
-# mplayer::loadFile "../test/test.mp4" 0
+#mplayer::loadFile "../test/test.mp4" 0
 
 for {set i 0} {$i < [expr $argc - 1]} {incr i +1} {
 	switch -exact -- [lindex $argv $i] {
