@@ -151,6 +151,7 @@ namespace eval jobBox {
 				lappend cmd "-map" [format "0:%s" $audioId]
 			}
 		}
+		lappend cmd "-y"
 		lappend cmd $resultFile
 		if {$dryRun} {
 			return $cmd
