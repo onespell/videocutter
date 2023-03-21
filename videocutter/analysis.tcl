@@ -15,10 +15,11 @@ namespace eval analysis {
 			set list [split $line ,]
 			set width [lindex $list 0]
 			set height [lindex $list 1]
-			if {[catch {set ratio [lindex $list 2]}]} {
+			if {[catch {set ratio [lindex $list 2]}] || $ratio eq "N/A"} {
 				set gcd [util::gcd $width $height]
-				set ratio [format "%d:%s" [expr int($width / $gcd)] [expr int($height / $gcd)]]
+				set ratio [format "%d:%d" [expr int($width / $gcd)] [expr int($height / $gcd)]]
 			}
+			puts $ratio
 			break
 		}
 		set result {}
