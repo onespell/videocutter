@@ -103,7 +103,10 @@ namespace eval jobBox {
 				lappend cmd "-q:v" 90 "-lossless" 0 "-compression_level" 6 "-loop" 0 "-preset" "picture"
 			}
 			default {
-				# quality level, from 1 (best) to 31 (worst)
+				# Normal range for JPEG is 2-31 with 31 being the worst 
+				# quality. The scale is linear with double the qscale 
+				# being roughly half the bitrate. Recommend trying 
+				# values of 2-5.
 				lappend cmd "-q:v" 2
 			}
 		}
