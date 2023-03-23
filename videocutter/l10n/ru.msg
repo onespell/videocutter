@@ -34,3 +34,4 @@ mcset ru noKeyFrames "не удалось получить список опор
 mcset ru noSound "без звука"
 mcset ru add "добавить в задания"
 mcset ru invalidJobStr "некорректная строка"
+mcset ru reencode "перекодировать"

@@ -19,6 +19,7 @@ namespace eval clipBox {
 	variable sizeBox
 	variable audioBox
 	variable formatBox
+	variable reencode
 
 	proc init {parent} {
 		variable frame
@@ -37,19 +38,22 @@ namespace eval clipBox {
 		variable sizeBox
 		variable audioBox
 		variable formatBox
+		variable reencode
 		set sizeBox [ttk::combobox $frame.size -textvariable clipBox::size]
 		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set audioBox [ttk::combobox $frame.audio -textvariable clipBox::audio]
 		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set formatBox [ttk::combobox $frame.format -textvariable clipBox::format -values $setting::videoFormats]
 		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
+		set reencode false
+		set reencodeChk [checkbutton $frame.reencode -text [mc reencode] -variable clipBox::reencode]
 		set cutBtn [button $frame.cut -text [mc cut] -command {jobBox::add [clipBox::newJob]}]
 
 		pack $aBtn -side left
 		pack $aLbl -side left -fill x -expand true
 		pack $bBtn -side left
 		pack $bLbl -side left -fill x -expand true
-		pack $frameA $frameB $sizeBox $audioBox $formatBox $cutBtn -side top -fill x -expand true
+		pack $frameA $frameB $sizeBox $audioBox $formatBox $reencodeChk $cutBtn -side top -fill x -expand true
 	}
 
 	proc newJob {} {
