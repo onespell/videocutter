@@ -70,6 +70,31 @@ namespace eval clipBox {
 		variable defaultAudio
 		variable audioStreams
 		variable reencode
+		if {$size eq $defaultSize && !$reencode} {
+			set pSize ""
+		} else {
+			set pSize [dict get $sizes $size]
+		}
+		if {$audio eq $defaultAudio} {
+			set pAudio ""
+		} else {
+			set pAudio [dict get $audioStreams $audio]
+		}
+		return [job::newClipJob $a $b $format $pSize $videoStream $pAudio]
+	}
+
+	proc newJob0 {} {
+		variable a
+		variable b
+		variable format
+		variable size
+		variable defaultSize
+		variable sizes
+		variable videoStream
+		variable audio
+		variable defaultAudio
+		variable audioStreams
+		variable reencode
 		if {$size eq $defaultSize} {
 			set pSize ""
 		} else {
