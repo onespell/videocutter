@@ -25,7 +25,7 @@ namespace eval jobBox {
 
 		set frame1 [frame $frame.frame1]
 		variable dryRun
-		set dryRun false
+		set dryRun 0
 		set dryRunChk [checkbutton $frame1.dryrun -text [mc dryRun] -variable jobBox::dryRun]
 		set runBtn [button $frame1.button -text [mc run] -command jobBox::run]
 

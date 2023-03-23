@@ -10,6 +10,7 @@ namespace eval job {
 	variable sizeIndex "sz"
 	variable videoIndex "v"
 	variable audioIndex "a"
+	variable reencodeIndex "c"
 
 	proc newShotJob {millis format} {
 		variable shotJobType
@@ -34,7 +35,7 @@ namespace eval job {
 		return [dict get $job $timeIndex]
 	}
 
-	proc newClipJob {start finish format size video audio} {
+	proc newClipJob {start finish format size video audio reencode} {
 		variable clipJobType
 		variable typeIndex
 		variable formatIndex
@@ -43,7 +44,8 @@ namespace eval job {
 		variable sizeIndex
 		variable videoIndex
 		variable audioIndex
-		return [dict create $typeIndex $clipJobType $timeIndex $start $finishIndex $finish $formatIndex $format $sizeIndex $size $videoIndex $video $audioIndex $audio]
+		variable reencodeIndex
+		return [dict create $typeIndex $clipJobType $timeIndex $start $finishIndex $finish $formatIndex $format $sizeIndex $size $videoIndex $video $audioIndex $audio $reencodeIndex $reencode]
 	}
 
 	proc getFinish {job} {
@@ -64,5 +66,10 @@ namespace eval job {
 	proc getAudio {job} {
 		variable audioIndex
 		return [dict get $job $audioIndex]
+	}
+
+	proc getReencode {job} {
+		variable reencodeIndex
+		return [dict get $job $reencodeIndex]
 	}
 }

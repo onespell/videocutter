@@ -2,8 +2,8 @@ namespace eval clipBox {
 	namespace export init frame setDuration setTime setFormat setVideoStream setAudioStreams
 
 	variable frame
-	variable size
-	variable defaultSize
+	variable size ""
+	variable defaultSize ""
 	variable sizes
 	variable videoStream
 	variable audio
@@ -19,6 +19,7 @@ namespace eval clipBox {
 	variable sizeBox
 	variable audioBox
 	variable formatBox
+	variable reencodeChk
 	variable reencode
 
 	proc init {parent} {
@@ -38,16 +39,17 @@ namespace eval clipBox {
 		variable sizeBox
 		variable audioBox
 		variable formatBox
+		variable reencodeChk
 		variable reencode
 		set sizeBox [ttk::combobox $frame.size -textvariable clipBox::size]
-		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set audioBox [ttk::combobox $frame.audio -textvariable clipBox::audio]
-		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		set formatBox [ttk::combobox $frame.format -textvariable clipBox::format -values $setting::videoFormats]
-		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
-		set reencode false
+		set reencode 0
 		set reencodeChk [checkbutton $frame.reencode -text [mc reencode] -variable clipBox::reencode]
 		set cutBtn [button $frame.cut -text [mc cut] -command {jobBox::add [clipBox::newJob]}]
+		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
+		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
+		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSizeSelect %W]
 
 		pack $aBtn -side left
 		pack $aLbl -side left -fill x -expand true
@@ -67,6 +69,7 @@ namespace eval clipBox {
 		variable audio
 		variable defaultAudio
 		variable audioStreams
+		variable reencode
 		if {$size eq $defaultSize} {
 			set pSize ""
 		} else {
@@ -77,7 +80,7 @@ namespace eval clipBox {
 		} else {
 			set pAudio [dict get $audioStreams $audio]
 		}
-		return [job::newClipJob $a $b $format $pSize $videoStream $pAudio]
+		return [job::newClipJob $a $b $format $pSize $videoStream $pAudio $reencode]
 	}
 
 	proc setA {value} {
@@ -174,6 +177,19 @@ namespace eval clipBox {
 			}
 		}
 		$audioBox config -values $listValues
+	}
+
+	proc onSizeSelect {w} {
+		if {$clipBox::size eq $clipBox::defaultSize} {
+			variable reencode
+			set reencode 0
+			$clipBox::reencodeChk config -state normal
+		} else {
+			variable reencode
+			set reencode 1
+			$clipBox::reencodeChk config -state disabled
+		}
+		onSelect %w
 	}
 
 	proc onSelect {w} {
