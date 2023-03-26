@@ -55,6 +55,7 @@ namespace eval mplayer {
 		}
 		goTo 0
 		mediabar::reset $duration $paused 0 $session::volume $mute $keyFrames
+		shotBox::reset
 		jobBox::reset
 		toolBox::setEnabled 1
 		log::info "open $filePath"

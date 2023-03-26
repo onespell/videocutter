@@ -2,12 +2,14 @@ namespace eval toolBox {
 	namespace export init frame setEnabled
 
 	variable frame
+	variable manualInputBtn
 
 	proc init {parent} {
 		variable frame
 		set frame [frame $parent.frameToolbox -relief groove -borderwidth 1 -padx 5 -pady 5]
 
 		set frame1 [frame $frame.frame1 -pady 5]
+		variable manualInputBtn
 		set manualInputBtn [button $frame1.manualInput -text [mc manualInput] -command {set callback [list "jobBox::insertJobs"]; wid::showTextInput [mc add] $callback}]
 
 		shotBox::init $frame
@@ -21,6 +23,14 @@ namespace eval toolBox {
 	}
 
 	proc setEnabled {value} {
+		variable manualInputBtn
+		if {$value > 0} {
+			set state "normal"
+		} else {
+			set state "disabled"
+		}
+		shotBox::setEnabled $value
 		clipBox::setEnabled $value
+		$manualInputBtn config -state $state
 	}
 }
