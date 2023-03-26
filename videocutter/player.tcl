@@ -52,7 +52,7 @@ namespace eval player {
 			setMute true
 		}
 		if {$session::volume > 0} {
-			setVolume $session::volume
+			setVolumeForcibly $session::volume
 		}
 		goTo 0
 		mediabar::reset $duration $paused 0 $session::volume [eval [list "${p}::isMuted"]] $keyFrames
@@ -86,11 +86,15 @@ namespace eval player {
 
 	proc setVolume {vol} {
 		if {$vol ne $session::volume} {
-			session::setVolume $vol
-			variable p
-			set cmd [list "${p}::setVolume" $vol]
-			eval $cmd
+			setVolumeForcibly $vol
 		}
+	}
+
+	proc setVolumeForcibly {vol} {
+		session::setVolume $vol
+		variable p
+		set cmd [list "${p}::setVolume" $vol]
+		eval $cmd
 	}
 
 	proc setMute {flag} {
