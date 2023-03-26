@@ -188,6 +188,7 @@ namespace eval jobBox {
 				set items [lreplace $items $idx $idx]
 			}
 		}
+		toolBox::onSelect
 	}
 
 	proc reset {} {

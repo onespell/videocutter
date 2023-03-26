@@ -14,7 +14,7 @@ namespace eval shotBox {
 
 		variable imageFormatBox
 		set imageFormatBox [ttk::combobox $frame.format -textvariable shotBox::imageFormat -values $setting::imageFormats]
-		bind $imageFormatBox <<ComboboxSelected>> [list toolBox::onSelect %W]
+		bind $imageFormatBox <<ComboboxSelected>> [list toolBox::onSelect]
 
 		set frame1 [frame $frame.frame1]
 		variable freezeBtn

@@ -38,7 +38,7 @@ namespace eval toolBox {
 		jobBox::setEnabled $value
 	}
 
-	proc onSelect {w} {
+	proc onSelect {} {
 		focus $mediabar::frame
 	}
 
