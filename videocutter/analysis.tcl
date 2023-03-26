@@ -1,8 +1,6 @@
 namespace eval analysis {
 	namespace export getFormat getDuration getFrameSizes getKeyFrames getMediaStreams
 
-	variable duration
-
 	proc getFormat {filePath} {
 		set ext [file extension {*}$filePath]
 		set len [string length $ext]
@@ -91,11 +89,8 @@ namespace eval analysis {
 	}
 
 	proc getDuration {filePath} {
-		variable duration
-		set duration "-"
-		set input [open "| $setting::mplayerPath -identify -frames 0 $filePath" r]
-		fileevent $input readable [list analysis::readDuration $input]
-		vwait analysis::duration
+		set input [open "| $setting::ffprobePath -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $filePath" r]
+		set duration [lindex [split [read $input] \n] 0]
 		if {$duration ne ""} {
 			set result [util::toMillis $duration]
 		} else {
@@ -104,31 +99,4 @@ namespace eval analysis {
 		return $result
 	}
 
-	proc readDuration {pipe} {
-		if {[eof $pipe]} {
-			catch {close $pipe}
-			variable duration
-			set duration ""
-			return
-		}
-		gets $pipe line
-		if {[string range $line 0 8] eq "ID_LENGTH"} {
-			variable duration
-			set duration [string range $line 10 [string length $line]]
-			catch {close $pipe}
-		}
-	}
-
-	proc getDuration0 {filePath} {
-		set result 0
-		set input [open "| $setting::mplayerPath -identify -frames 0 $filePath" r]
-		foreach line [split [read $input] \n] {
-			if {[string range $line 0 8] eq "ID_LENGTH"} {
-				set s [string range $line 10 [string length $line]]
-				set result [util::toMillis $s]
-				break
-			}
-		}
-		return $result
-	}
 }
