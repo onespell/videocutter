@@ -52,7 +52,8 @@ namespace eval jobBox {
 
 	proc run {} {
 		variable items
-		if {[llength $items] == 0} {
+		set numOfJobs [llength $items]
+		if {$numOfJobs == 0} {
 			return
 		}
 		variable dryRun
@@ -61,10 +62,10 @@ namespace eval jobBox {
 			foreach job $items {
 				set type [job::getJobType $job]
 				if {$type eq $job::shotJobType} {
-					append msg [doShotJob $job $dryRun]
+					append msg [doShotJob $job $dryRun $numOfJobs]
 					append msg "\n\n"
 				} elseif {$type eq $job::clipJobType} {
-					append msg [doClipJob $job $dryRun]
+					append msg [doClipJob $job $dryRun $numOfJobs]
 					append msg "\n\n"
 				}
 			}
@@ -75,9 +76,9 @@ namespace eval jobBox {
 			foreach job $items {
 				set type [job::getJobType $job]
 				if {$type eq $job::shotJobType} {
-					set result [doShotJob $job $dryRun]
+					set result [doShotJob $job $dryRun $numOfJobs]
 				} elseif {$type eq $job::clipJobType} {
-					set result [doClipJob $job $dryRun]
+					set result [doClipJob $job $dryRun $numOfJobs]
 				}
 				if {$result} {
 					break
@@ -93,10 +94,10 @@ namespace eval jobBox {
 		}
 	}
 
-	proc doShotJob {job dryRun} {
+	proc doShotJob {job dryRun numOfJobs} {
 		set sourceFile $session::filePath
 		set format [job::getFormat $job]
-		set resultFile [file::getNext {*}$sourceFile $format]
+		set resultFile [file::getNext {*}$sourceFile $format $numOfJobs]
 		set t [util::toTimeCode [job::getTime $job]]
 		variable ffmpegPath
 		set cmd [list $ffmpegPath]
@@ -128,11 +129,11 @@ namespace eval jobBox {
 		}
 	}
 
-	proc doClipJob {job dryRun} {
+	proc doClipJob {job dryRun numOfJobs} {
 		variable ffmpegPath
 		set sourceFile $session::filePath
 		set format [job::getFormat $job]
-		set resultFile [file::getNext {*}$sourceFile $format]
+		set resultFile [file::getNext {*}$sourceFile $format $numOfJobs]
 		set numOfThreads [util::numOfFfprobeThreads]
 		set cmd [list $ffmpegPath]
 		if {$setting::ffmpegReport eq "on"} {
