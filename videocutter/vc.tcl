@@ -13,7 +13,7 @@ source $workdir/session.tcl
 source $workdir/analysis.tcl
 source $workdir/stream.tcl
 source $workdir/util.tcl
-source $workdir/mplayer.tcl
+source $workdir/player.tcl
 source $workdir/job.tcl
 source $workdir/wid.tcl
 source $workdir/log.tcl
@@ -23,7 +23,7 @@ source $workdir/pts.tcl
 source $workdir/l10n.tcl
 source $workdir/menu.tcl
 source $workdir/toolbox.tcl
-source $workdir/player.tcl
+source $workdir/viewer.tcl
 source $workdir/shotbox.tcl
 source $workdir/clipbox.tcl
 source $workdir/jobbox.tcl
@@ -36,15 +36,15 @@ log::init
 # compose window
 wm title . "videocutter"
 toolBox::init .
-player::init $workdir .
+viewer::init $workdir .
 pack $toolBox::frame -side right
-pack $player::frame -side right -fill both -expand true
+pack $viewer::frame -side right -fill both -expand true
 
-mplayer::init $setting::mplayerPath
+player::init
 
-#mplayer::loadFile "../test/test2.mkv" 0
-#mplayer::loadFile "../test/test.mp4" 0
-#return
+#player::loadFile "../test/test2.mkv" 0
+player::loadFile "../test/test.mp4" 0
+return
 
 for {set i 0} {$i < [expr $argc - 1]} {incr i +1} {
 	switch -exact -- [lindex $argv $i] {
@@ -53,5 +53,5 @@ for {set i 0} {$i < [expr $argc - 1]} {incr i +1} {
 }
 if {$argc >= 1} {
 	set filePath [lindex $argv [expr $argc - 1]]
-	mplayer::loadFile $filePath 0
+	player::loadFile $filePath 0
 }

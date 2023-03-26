@@ -19,7 +19,7 @@ proc quit {} {
 	}
 	if {$b} {
 		log::close
-		mplayer::closeSession
+		player::closeSession
 		exit
 	}
 }
@@ -30,6 +30,6 @@ menu .menubar
 
 set fileMenuItem [menu .menubar.fileMenuItem]
 .menubar add cascade -label [mc file] -menu .menubar.fileMenuItem
-addMenuItem $fileMenuItem 1 [mc open] {set filePath [tk_getOpenFile -initialdir $session::workingDir -filetypes $session::fileTypes]; if {$filePath != ""} {session::setWorkingDir [file dirname $filePath]; mplayer::loadFile $filePath 0}} "<Control-o>" "Ctrl-O"
-addMenuItem $fileMenuItem 2 [mc close] {mplayer::closeSession} "<Control-w>" "Ctrl-W"
+addMenuItem $fileMenuItem 1 [mc open] {set filePath [tk_getOpenFile -initialdir $session::workingDir -filetypes $session::fileTypes]; if {$filePath != ""} {session::setWorkingDir [file dirname $filePath]; player::loadFile $filePath 0}} "<Control-o>" "Ctrl-O"
+addMenuItem $fileMenuItem 2 [mc close] {player::closeSession} "<Control-w>" "Ctrl-W"
 addMenuItem $fileMenuItem 3 [mc quit] {quit} "<Control-q>" "Ctrl-Q"

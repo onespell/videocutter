@@ -84,13 +84,13 @@ namespace eval mediabar {
 		variable forwardBtn
 		switch -exact -- $pauseBtnState {
 			0 {
-				$pauseBtn config -image mediabar::pauseImg -command {set mediabar::pauseBtnState 1; mediabar::switchPauseBtnMode; mplayer::pause};
+				$pauseBtn config -image mediabar::pauseImg -command {set mediabar::pauseBtnState 1; mediabar::switchPauseBtnMode; player::pause};
 				help $pauseBtn balloon [mc pause]
 				$rewindBtn config -state disabled
 				$forwardBtn config -state disabled
 			}
 			1 {
-				$pauseBtn config -image mediabar::playImg -command {set mediabar::pauseBtnState 0; mediabar::switchPauseBtnMode; mplayer::play};
+				$pauseBtn config -image mediabar::playImg -command {set mediabar::pauseBtnState 0; mediabar::switchPauseBtnMode; player::play};
 				help $pauseBtn balloon [mc play]
 				$rewindBtn config -state normal
 				$forwardBtn config -state normal
@@ -103,11 +103,11 @@ namespace eval mediabar {
 		variable muteBtnState
 		switch -exact -- $muteBtnState {
 			0 {
-				$muteBtn config -image mediabar::unmuteImg -command {set mediabar::muteBtnState 1; mediabar::switchMuteBtnMode; mplayer::setMute true};
+				$muteBtn config -image mediabar::unmuteImg -command {set mediabar::muteBtnState 1; mediabar::switchMuteBtnMode; player::setMute true};
 				help $muteBtn balloon [mc mute]
 			}
 			1 {
-				$muteBtn config -image mediabar::muteImg -command {set mediabar::muteBtnState 0; mediabar::switchMuteBtnMode; mplayer::setMute false};
+				$muteBtn config -image mediabar::muteImg -command {set mediabar::muteBtnState 0; mediabar::switchMuteBtnMode; player::setMute false};
 				help $muteBtn balloon [mc unmute]
 			}
 		}
@@ -192,14 +192,14 @@ namespace eval mediabar {
 	proc goTo {millis} {
 		variable pauseBtnState
 		if {$pauseBtnState == 1} {
-			mplayer::goTo $millis
+			player::goTo $millis
 			variable time
 			set time $millis
 		}
 	}
 
 	proc setVolume {vol} {
-		mplayer::setVolume $vol
+		player::setVolume $vol
 	}
 
 	proc reset {duration paused millis vol mute frames} {

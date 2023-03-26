@@ -1,25 +1,64 @@
+source $workdir/mplayer.tcl
+source $workdir/mpv.tcl
+
 namespace eval player {
-	namespace export init setSize frame video
+	namespace export setSize loadFile pause play setVolume setMute goTo closeSession
 
-	variable frame
-	variable video
+	variable p
 
-	proc init {workdir parent} {
-		variable frame
-		set frame [frame $parent.framePlayer]
-
-		variable video
-		set video [frame $frame.video -container yes]
-		$video config -bg black
-
-		mediabar::init $workdir $frame
-		pack $mediabar::frame -side bottom -fill x
-		#pack $video -side bottom -fill both -expand true
-		pack $video -side bottom
+	proc init {} {
+		variable p
+		switch -exact -- $setting::player {
+			mpv {set p "mpv"}
+			mplayer {set p "mplayer"}
+		}
 	}
 
 	proc setSize {width height} {
-		variable video
-		$video config -width $width -height $height
+		variable p
+		set cmd [list "${p}::setSize" $width $height]
+		eval $cmd
+	}
+
+	proc loadFile {filePath position} {
+		variable p
+		set cmd [list "${p}::loadFile" $filePath $position]
+		eval $cmd
+	}
+
+	proc pause {} {
+		variable p
+		set cmd [list "${p}::pause"]
+		eval $cmd
+	}
+
+	proc play {} {
+		variable p
+		set cmd [list "${p}::play"]
+		eval $cmd
+	}
+
+	proc setVolume {vol} {
+		variable p
+		set cmd [list "${p}::setVolume" $vol]
+		eval $cmd
+	}
+
+	proc setMute {flag} {
+		variable p
+		set cmd [list "${p}::setMute" $flag]
+		eval $cmd
+	}
+
+	proc goTo {millis} {
+		variable p
+		set cmd [list "${p}::goTo" $millis]
+		eval $cmd
+	}
+
+	proc closeSession {} {
+		variable p
+		set cmd [list "${p}::closeSession"]
+		eval $cmd
 	}
 }
