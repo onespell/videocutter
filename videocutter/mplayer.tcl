@@ -33,7 +33,7 @@ namespace eval mplayer {
 		if {[player::isPaused]} {
 			return
 		}
-		set t [util::extractTime $line]
+		set t [extractTime $line]
 		if {$t ne ""} {
 			variable time
 			set time [util::toMillis $t]
@@ -41,6 +41,17 @@ namespace eval mplayer {
 			shotBox::setTime $time
 			clipBox::setTime $time
 		}
+	}
+
+	proc extractTime {line} {
+		if {[string range $line 0 1] eq "A:"} {
+			set p [expr [string first " V:" $line] + 3]
+			set q [string first " A-V:" $line $p]
+			set result [string range $line $p [expr $q - 1]]
+		} else {
+			set result ""
+		}
+		return $result
 	}
 
 	proc setVolume {vol} {

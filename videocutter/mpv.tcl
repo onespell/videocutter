@@ -19,7 +19,7 @@ namespace eval mpv {
 		lassign [chan pipe] outReadChanId outWriteChanId
 		lassign [chan pipe] inReadChanId inWriteChanId
 		fconfigure $inWriteChanId -buffersize 0
-		set pid [exec >&@$outWriteChanId <@$inReadChanId $mpvPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $filePath &]
+		set pid [exec >&@$outWriteChanId <@$inReadChanId $mpvPath --no-config --no-osc --osd-level=0 --volume=0 --start=+$position --wid=$wid $filePath &]
 		fileevent $outReadChanId readable [list mpv::readOutput $outReadChanId]
 		set time 0
 	}
@@ -33,7 +33,7 @@ namespace eval mpv {
 		if {[player::isPaused]} {
 			return
 		}
-		set t [util::extractTime $line]
+		set t [extractTime $line]
 		if {$t ne ""} {
 			variable time
 			set time [util::toMillis $t]
@@ -41,6 +41,17 @@ namespace eval mpv {
 			shotBox::setTime $time
 			clipBox::setTime $time
 		}
+	}
+
+	proc extractTime {line} {
+		puts $line
+		if {[string range $line 0 2] eq "AV:"} {
+			set q [string first "/" $line 3]
+			set result [string range $line 3 [expr $q - 1]]
+		} else {
+			set result ""
+		}
+		return $result
 	}
 
 	proc setVolume {vol} {
@@ -90,7 +101,9 @@ namespace eval mpv {
 	}
 
 	proc pause {} {
-		sendCommand "pause"
+		#sendCommand "set pause yes"
+		#sendCommand "{ \"command\": \[\"set_property\", \"pause\", true\] }"
+		sendCommand "p"
 	}
 
 	proc play {} {

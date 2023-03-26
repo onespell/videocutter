@@ -1,20 +1,9 @@
 namespace eval util {
-	namespace export extractTime toMillis toTimeCode fromTimeCode isNotValid gcd
+	namespace export toMillis toTimeCode fromTimeCode isNotValid gcd
 
 	variable MS_IN_SECOND 1000
 	variable MS_IN_MINUTE [expr 60 * $MS_IN_SECOND]
 	variable MS_IN_HOUR [expr 60 * $MS_IN_MINUTE]
-
-	proc extractTime {line} {
-		if {[string range $line 0 1] eq "A:"} {
-			set p [expr [string first " V:" $line] + 3]
-			set q [string first " A-V:" $line $p]
-			set result [string range $line $p [expr $q - 1]]
-		} else {
-			set result ""
-		}
-		return $result
-	}
 
 	proc toMillis {seconds} {
 		set s [string trim $seconds]
