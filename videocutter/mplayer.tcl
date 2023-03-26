@@ -1,62 +1,27 @@
 namespace eval mplayer {
-	namespace export loadFile goTo pause play setVolume setMute
+	namespace export setInOut goTo pause play setVolume setMute isMuted
 
 	variable mplayerPath $setting::mplayerPath
 	variable duration
 	variable pid
 	variable inReadChanId
 	variable inWriteChanId
-	variable mute false
-	variable paused false
 	variable time
+	variable mute false
 
-	proc loadFile {aFilePath position} {
-		closeSession
-		mediabar::setEnabled 0
-		toolBox::setEnabled 0
-		set splash [wid::showWaitSplash [mc loading]]
+	proc setInOut {filePath position} {
 		variable mplayerPath
-		variable duration
 		variable pid
 		variable inReadChanId
 		variable inWriteChanId
-		variable paused
-		variable mute
 		variable time
-		set filePath [list $aFilePath]
-		session::setFilePath $filePath
-		set sizes [analysis::getFrameSizes $filePath]
-		set size [lindex $sizes 0]
-		set width [size::getWidth $size]
-		set height [size::getHeight $size]
-		set keyFrames [analysis::getKeyFrames $filePath]
-		viewer::setSize $width $height
-		set duration [analysis::getDuration $filePath]
-		set format [analysis::getFormat $filePath]
-		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
-		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
-		set wid [expr [winfo id $viewer::video ]]
+		set wid [expr [winfo id $viewer::video]]
 		lassign [chan pipe] outReadChanId outWriteChanId
 		lassign [chan pipe] inReadChanId inWriteChanId
 		fconfigure $inWriteChanId -buffersize 0
-		set pid [exec >&@$outWriteChanId <@$inReadChanId $mplayerPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $aFilePath &]
+		set pid [exec >&@$outWriteChanId <@$inReadChanId $mplayerPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $filePath &]
 		fileevent $outReadChanId readable [list mplayer::readOutput $outReadChanId]
-		pause
 		set time 0
-		if {$setting::muteOnStart} {
-			setMute true
-		}
-		if {$session::volume > 0} {
-			setVolume $session::volume
-		}
-		goTo 0
-		mediabar::reset $duration $paused 0 $session::volume $mute $keyFrames
-		shotBox::reset
-		jobBox::reset
-		mediabar::setEnabled 1
-		toolBox::setEnabled 1
-		log::info "open $filePath"
-		wid::destroySplash $splash
 	}
 
 	proc readOutput {pipe} {
@@ -65,8 +30,7 @@ namespace eval mplayer {
 			return
 		}
 		gets $pipe line
-		variable paused
-		if {$paused eq true} {
+		if {[player::isPaused]} {
 			return
 		}
 		set t [util::extractTime $line]
@@ -82,15 +46,14 @@ namespace eval mplayer {
 	proc setVolume {vol} {
 		if {$vol ne $session::volume} {
 			session::setVolume $vol
-			variable paused
-			if {$paused} {
+			if {[player::isPaused]} {
 				variable time
 				set t $time
 			}
 			#sendCommand "volume $vol 1"
 			sendCommand [format "volume %d 1" $vol]
-			if {$paused} {
-				set paused false
+			if {[player::isPaused]} {
+				player::setPaused 0
 				pause
 				goTo $t
 			}
@@ -101,8 +64,7 @@ namespace eval mplayer {
 		variable mute
 		if {$flag ne $mute} {
 			set mute $flag
-			variable paused
-			if {$paused} {
+			if {[player::isPaused]} {
 				variable time
 				set t $time
 			}
@@ -111,12 +73,17 @@ namespace eval mplayer {
 			} else {
 				sendCommand "mute 0"
 			}
-			if {$paused} {
-				set paused false
+			if {[player::isPaused]} {
+				player::setPaused 0
 				pause
 				goTo $t
 			}
 		}
+	}
+
+	proc isMuted {} {
+		variable mute
+		return $mute
 	}
 
 	proc goTo {millis} {
@@ -128,17 +95,15 @@ namespace eval mplayer {
 	}
 
 	proc pause {} {
-		variable paused
-		if {$paused ne true} {
-			set paused true
+		if {![player::isPaused]} {
+			player::setPaused 1
 			sendCommand "pause"
 		}
 	}
 
 	proc play {} {
-		variable paused
-		if {$paused} {
-			set paused false
+		if {[player::isPaused]} {
+			player::setPaused 0
 			sendCommand "pause"
 		}
 	}
