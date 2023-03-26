@@ -36,13 +36,9 @@ namespace eval mplayer {
 		player::setSize $width $height
 		set duration [analysis::getDuration $filePath]
 		mediabar::setDuration $duration
-		clipBox::setDuration $duration
 		set format [analysis::getFormat $filePath]
-		clipBox::setFormat $format
-		clipBox::setSizes $sizes
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
-		clipBox::setVideoStream [lindex $videoStreams 0]
-		clipBox::setAudioStreams $audioStreams
+		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
 		set wid [expr [winfo id $player::video ]]
 		lassign [chan pipe] outReadChanId outWriteChanId
 		lassign [chan pipe] inReadChanId inWriteChanId

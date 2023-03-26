@@ -1,5 +1,5 @@
 namespace eval clipBox {
-	namespace export init frame setDuration setTime setFormat setVideoStream setAudioStreams
+	namespace export init frame setTime reset
 
 	variable frame
 	variable size ""
@@ -80,6 +80,8 @@ namespace eval clipBox {
 		} else {
 			set pAudio [dict get $audioStreams $audio]
 		}
+		puts $a
+		puts $b
 		return [job::newClipJob $a $b $format $pSize $videoStream $pAudio]
 	}
 
@@ -136,14 +138,37 @@ namespace eval clipBox {
 		set time $value
 	}
 
-	proc setDuration {value} {
-		variable duration
-		set duration $value
+	proc onSizeSelect {w} {
+		if {$clipBox::size eq $clipBox::defaultSize} {
+			variable reencode
+			set reencode 0
+			$clipBox::reencodeChk config -state normal
+		} else {
+			variable reencode
+			set reencode 1
+			$clipBox::reencodeChk config -state disabled
+		}
+		onSelect %w
 	}
 
-	proc setFormat {value} {
+	proc onSelect {w} {
+		focus $mediabar::frame
+	}
+
+	proc reset {aFormat aDuration aSizes videoStream audioStreams} {
+		variable a
+		variable b
+		variable time
 		variable format
-		set format $value
+		variable duration
+		set a -1
+		set b -1
+		set time -1
+		set format $aFormat
+		set duration $aDuration
+		setSizes $aSizes
+		setVideoStream $videoStream
+		setAudioStreams $audioStreams
 	}
 
 	proc setSizes {value} {
@@ -202,22 +227,5 @@ namespace eval clipBox {
 			}
 		}
 		$audioBox config -values $listValues
-	}
-
-	proc onSizeSelect {w} {
-		if {$clipBox::size eq $clipBox::defaultSize} {
-			variable reencode
-			set reencode 0
-			$clipBox::reencodeChk config -state normal
-		} else {
-			variable reencode
-			set reencode 1
-			$clipBox::reencodeChk config -state disabled
-		}
-		onSelect %w
-	}
-
-	proc onSelect {w} {
-		focus $mediabar::frame
 	}
 }
