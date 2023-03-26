@@ -65,21 +65,32 @@ namespace eval player {
 	}
 
 	proc pause {} {
-		variable p
-		set cmd [list "${p}::pause"]
-		eval $cmd
+		variable paused
+		if {!$paused} {
+			set paused 1
+			variable p
+			set cmd [list "${p}::pause"]
+			eval $cmd
+		}
 	}
 
 	proc play {} {
-		variable p
-		set cmd [list "${p}::play"]
-		eval $cmd
+		variable paused
+		if {$paused} {
+			set paused 0
+			variable p
+			set cmd [list "${p}::play"]
+			eval $cmd
+		}
 	}
 
 	proc setVolume {vol} {
-		variable p
-		set cmd [list "${p}::setVolume" $vol]
-		eval $cmd
+		if {$vol ne $session::volume} {
+			session::setVolume $vol
+			variable p
+			set cmd [list "${p}::setVolume" $vol]
+			eval $cmd
+		}
 	}
 
 	proc setMute {flag} {
@@ -92,6 +103,8 @@ namespace eval player {
 		variable p
 		set cmd [list "${p}::goTo" $millis]
 		eval $cmd
+		shotBox::setTime $millis
+		clipBox::setTime $millis
 	}
 
 	proc closeSession {} {

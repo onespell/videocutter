@@ -44,19 +44,16 @@ namespace eval mplayer {
 	}
 
 	proc setVolume {vol} {
-		if {$vol ne $session::volume} {
-			session::setVolume $vol
-			if {[player::isPaused]} {
-				variable time
-				set t $time
-			}
-			#sendCommand "volume $vol 1"
-			sendCommand [format "volume %d 1" $vol]
-			if {[player::isPaused]} {
-				player::setPaused 0
-				pause
-				goTo $t
-			}
+		if {[player::isPaused]} {
+			variable time
+			set t $time
+		}
+		#sendCommand "volume $vol 1"
+		sendCommand [format "volume %d 1" $vol]
+		if {[player::isPaused]} {
+			player::setPaused 0
+			player::pause
+			goTo $t
 		}
 	}
 
@@ -75,7 +72,7 @@ namespace eval mplayer {
 			}
 			if {[player::isPaused]} {
 				player::setPaused 0
-				pause
+				player::pause
 				goTo $t
 			}
 		}
@@ -90,22 +87,14 @@ namespace eval mplayer {
 		set t [expr $millis * 0.001]
 		#sendCommand "pausing seek $t 2"
 		sendCommand [format "pausing seek %f 2" $t]
-		shotBox::setTime $millis
-		clipBox::setTime $millis
 	}
 
 	proc pause {} {
-		if {![player::isPaused]} {
-			player::setPaused 1
-			sendCommand "pause"
-		}
+		sendCommand "pause"
 	}
 
 	proc play {} {
-		if {[player::isPaused]} {
-			player::setPaused 0
-			sendCommand "pause"
-		}
+		sendCommand "pause"
 	}
 
 	proc closeSession {} {
