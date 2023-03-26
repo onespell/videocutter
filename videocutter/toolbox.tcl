@@ -15,6 +15,9 @@ namespace eval toolBox {
 		shotBox::init $frame
 		clipBox::init $frame
 		jobBox::init $frame
+
+		setEnabled 0
+
 		pack $shotBox::frame -side top -fill x -expand true
 		pack $clipBox::frame -side top -fill x -expand true
 		pack $manualInputBtn -side top -fill x -expand true
