@@ -2,7 +2,7 @@ source $workdir/mplayer.tcl
 source $workdir/mpv.tcl
 
 namespace eval player {
-	namespace export setSize loadFile pause play setVolume setMute goTo closeSession
+	namespace export loadFile pause play setVolume setMute goTo closeSession
 
 	variable p
 
@@ -12,12 +12,6 @@ namespace eval player {
 			mpv {set p "mpv"}
 			mplayer {set p "mplayer"}
 		}
-	}
-
-	proc setSize {width height} {
-		variable p
-		set cmd [list "${p}::setSize" $width $height]
-		eval $cmd
 	}
 
 	proc loadFile {filePath position} {
