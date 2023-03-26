@@ -32,5 +32,6 @@ namespace eval toolBox {
 		shotBox::setEnabled $value
 		clipBox::setEnabled $value
 		$manualInputBtn config -state $state
+		jobBox::setEnabled $value
 	}
 }

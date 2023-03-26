@@ -1,5 +1,5 @@
 namespace eval jobBox {
-	namespace export frame init reset add isEmpty insertJobs unmarshallClipJob
+	namespace export frame init reset add isEmpty insertJobs unmarshallClipJob setEnabled
 
 	variable ffmpegPath
 	variable frame
@@ -11,6 +11,8 @@ namespace eval jobBox {
 	variable videoPrefix "v:"
 	variable audioPrefix "a:"
 	variable noSound "no"
+	variable dryRunChk
+	variable runBtn
 
 	proc init {parent} {
 		variable frame
@@ -26,7 +28,9 @@ namespace eval jobBox {
 		set frame1 [frame $frame.frame1]
 		variable dryRun
 		set dryRun 0
+		variable dryRunChk
 		set dryRunChk [checkbutton $frame1.dryrun -text [mc dryRun] -variable jobBox::dryRun]
+		variable runBtn
 		set runBtn [button $frame1.button -text [mc run] -command jobBox::run]
 
 		bind $list "<Delete>" jobBox::onDelete
@@ -37,6 +41,8 @@ namespace eval jobBox {
 			set t [job::getTime $job]
 			mediabar::goTo $t
 		}
+
+		setEnabled 0
 
 		pack $dryRunChk -side left
 		pack $runBtn -side left -fill x -expand true
@@ -327,6 +333,21 @@ namespace eval jobBox {
 				continue
 			}
 			tk_messageBox -type ok -icon error -message [format "%s: %s" [mc invalidJobStr] $str]
+		}
+	}
+
+	proc setEnabled {value} {
+		variable list
+		variable dryRunChk
+		variable runBtn
+		if {$value > 0} {
+			set state "normal"
+		} else {
+			set state "disabled"
+		}
+		set children [list $list $dryRunChk $runBtn]
+		foreach x $children {
+			$x config -state $state
 		}
 	}
 }
