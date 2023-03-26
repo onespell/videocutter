@@ -53,8 +53,8 @@ namespace eval clipBox {
 		set reencodeChk [checkbutton $frame.reencode -text [mc reencode] -variable clipBox::reencode]
 		variable cutBtn
 		set cutBtn [button $frame.cut -text [mc cut] -command {if {$clipBox::a >= 0} {jobBox::add [clipBox::newJob]}}]
-		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
-		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
+		bind $audioBox <<ComboboxSelected>> [list toolBox::onSelect %W]
+		bind $formatBox <<ComboboxSelected>> [list toolBox::onSelect %W]
 		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSizeSelect %W]
 
 		setEnabled 0
@@ -131,11 +131,7 @@ namespace eval clipBox {
 			set reencode 1
 			$clipBox::reencodeChk config -state disabled
 		}
-		onSelect %w
-	}
-
-	proc onSelect {w} {
-		focus $mediabar::frame
+		toolBox::onSelect %w
 	}
 
 	proc setEnabled {value} {

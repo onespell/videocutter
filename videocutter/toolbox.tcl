@@ -1,5 +1,5 @@
 namespace eval toolBox {
-	namespace export init frame setEnabled
+	namespace export init frame setEnabled onSelect
 
 	variable frame
 	variable manualInputBtn
@@ -37,4 +37,9 @@ namespace eval toolBox {
 		$manualInputBtn config -state $state
 		jobBox::setEnabled $value
 	}
+
+	proc onSelect {w} {
+		focus $mediabar::frame
+	}
+
 }
