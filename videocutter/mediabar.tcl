@@ -1,5 +1,5 @@
 namespace eval mediabar {
-	namespace export init frame setTime reset goTo
+	namespace export init frame setTime reset goTo setEnabled
 
 	variable frame
 	variable pauseBtn
@@ -66,6 +66,8 @@ namespace eval mediabar {
 
 		bind . "<Key-Down>" mediabar::rewind
 		bind . "<Key-Up>" mediabar::forward
+
+		setEnabled 0
 
 		pack $pauseBtn -side left
 		pack $muteBtn -side right
@@ -223,5 +225,23 @@ namespace eval mediabar {
 		switchMuteBtnMode
 		variable keyFrames
 		set keyFrames $frames
+	}
+
+	proc setEnabled {value} {
+		variable pauseBtn
+		variable timeScl
+		variable rewindBtn
+		variable forwardBtn
+		variable volumeScl
+		variable muteBtn
+		if {$value > 0} {
+			set state "normal"
+		} else {
+			set state "disabled"
+		}
+		set children [list $pauseBtn $timeScl $rewindBtn $forwardBtn $volumeScl $muteBtn]
+		foreach x $children {
+			$x config -state $state
+		}
 	}
 }

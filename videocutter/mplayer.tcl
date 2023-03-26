@@ -17,6 +17,7 @@ namespace eval mplayer {
 
 	proc loadFile {aFilePath position} {
 		closeSession
+		mediabar::setEnabled 0
 		toolBox::setEnabled 0
 		set splash [wid::showWaitSplash [mc loading]]
 		variable mplayerPath
@@ -57,6 +58,7 @@ namespace eval mplayer {
 		mediabar::reset $duration $paused 0 $session::volume $mute $keyFrames
 		shotBox::reset
 		jobBox::reset
+		mediabar::setEnabled 1
 		toolBox::setEnabled 1
 		log::info "open $filePath"
 		wid::destroySplash $splash
