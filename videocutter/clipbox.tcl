@@ -46,7 +46,7 @@ namespace eval clipBox {
 		set formatBox [ttk::combobox $frame.format -textvariable clipBox::format -values $setting::videoFormats]
 		set reencode 0
 		set reencodeChk [checkbutton $frame.reencode -text [mc reencode] -variable clipBox::reencode]
-		set cutBtn [button $frame.cut -text [mc cut] -command {jobBox::add [clipBox::newJob]}]
+		set cutBtn [button $frame.cut -text [mc cut] -command {if {$clipBox::a >= 0} {jobBox::add [clipBox::newJob]}}]
 		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSizeSelect %W]
@@ -83,31 +83,6 @@ namespace eval clipBox {
 		puts $a
 		puts $b
 		return [job::newClipJob $a $b $format $pSize $videoStream $pAudio]
-	}
-
-	proc newJob0 {} {
-		variable a
-		variable b
-		variable format
-		variable size
-		variable defaultSize
-		variable sizes
-		variable videoStream
-		variable audio
-		variable defaultAudio
-		variable audioStreams
-		variable reencode
-		if {$size eq $defaultSize} {
-			set pSize ""
-		} else {
-			set pSize [dict get $sizes $size]
-		}
-		if {$audio eq $defaultAudio} {
-			set pAudio ""
-		} else {
-			set pAudio [dict get $audioStreams $audio]
-		}
-		return [job::newClipJob $a $b $format $pSize $videoStream $pAudio $reencode]
 	}
 
 	proc setA {value} {
@@ -157,12 +132,16 @@ namespace eval clipBox {
 
 	proc reset {aFormat aDuration aSizes videoStream audioStreams} {
 		variable a
+		variable aLbl
 		variable b
+		variable bLbl
 		variable time
 		variable format
 		variable duration
 		set a -1
+		$aLbl config -text ""
 		set b -1
+		$bLbl config -text ""
 		set time -1
 		set format $aFormat
 		set duration $aDuration
