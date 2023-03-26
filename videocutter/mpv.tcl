@@ -1,4 +1,4 @@
-namespace eval mplayer {
+namespace eval mpv {
 	namespace export loadFile goTo pause play setVolume setMute
 
 	variable mpvPath $setting::mplayerPath
