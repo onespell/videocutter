@@ -1,5 +1,5 @@
 namespace eval mediabar {
-	namespace export init frame setDuration setTime reset goTo
+	namespace export init frame setTime reset goTo
 
 	variable frame
 	variable pauseBtn
@@ -111,11 +111,6 @@ namespace eval mediabar {
 		}
 	}
 
-	proc setDuration {value} {
-		variable timeScl
-		$timeScl config -from 0 -to $value
-	}
-
 	proc setTime {value} {
 		variable pauseBtnState
 		if {$pauseBtnState == 0} {
@@ -205,7 +200,9 @@ namespace eval mediabar {
 		mplayer::setVolume $vol
 	}
 
-	proc reset {paused millis vol mute frames} {
+	proc reset {duration paused millis vol mute frames} {
+		variable timeScl
+		$timeScl config -from 0 -to $duration
 		variable pauseBtnState
 		if {$paused} {
 			set pauseBtnState 1

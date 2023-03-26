@@ -35,7 +35,6 @@ namespace eval mplayer {
 		set keyFrames [analysis::getKeyFrames $filePath]
 		player::setSize $width $height
 		set duration [analysis::getDuration $filePath]
-		mediabar::setDuration $duration
 		set format [analysis::getFormat $filePath]
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
 		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
@@ -54,7 +53,7 @@ namespace eval mplayer {
 			setVolume $session::volume
 		}
 		goTo 0
-		mediabar::reset $paused 0 $session::volume $mute $keyFrames
+		mediabar::reset $duration $paused 0 $session::volume $mute $keyFrames
 		jobBox::reset
 		log::info "open $filePath"
 		wid::destroySplash $splash
