@@ -1,5 +1,5 @@
 namespace eval toolBox {
-	namespace export init frame
+	namespace export init frame setEnabled
 
 	variable frame
 
@@ -18,5 +18,9 @@ namespace eval toolBox {
 		pack $manualInputBtn -side top -fill x -expand true
 		pack $frame1 -side top -fill x -expand true
 		pack $jobBox::frame -side top -fill both -expand true
+	}
+
+	proc setEnabled {value} {
+		clipBox::setEnabled $value
 	}
 }

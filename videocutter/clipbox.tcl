@@ -1,5 +1,5 @@
 namespace eval clipBox {
-	namespace export init frame setTime reset
+	namespace export init frame setTime reset setEnabled
 
 	variable frame
 	variable size ""
@@ -16,6 +16,9 @@ namespace eval clipBox {
 	variable b -1
 	variable aLbl
 	variable bLbl
+	variable aBtn
+	variable bBtn
+	variable cutBtn
 	variable sizeBox
 	variable audioBox
 	variable formatBox
@@ -27,11 +30,13 @@ namespace eval clipBox {
 		set frame [frame $parent.frameClipBox -relief groove -borderwidth 1 -padx 5 -pady 5]
 
 		set frameA [frame $frame.frameA]
+		variable aBtn
 		set aBtn [button $frameA.button -text "A \[" -command {clipBox::setA $clipBox::time}]
 		variable aLbl
 		set aLbl [label $frameA.label]
 
 		set frameB [frame $frame.frameB]
+		variable bBtn
 		set bBtn [button $frameB.button -text "\] B" -command {clipBox::setB $clipBox::time}]
 		variable bLbl
 		set bLbl [label $frameB.label]
@@ -46,10 +51,13 @@ namespace eval clipBox {
 		set formatBox [ttk::combobox $frame.format -textvariable clipBox::format -values $setting::videoFormats]
 		set reencode 0
 		set reencodeChk [checkbutton $frame.reencode -text [mc reencode] -variable clipBox::reencode]
+		variable cutBtn
 		set cutBtn [button $frame.cut -text [mc cut] -command {if {$clipBox::a >= 0} {jobBox::add [clipBox::newJob]}}]
 		bind $audioBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		bind $formatBox <<ComboboxSelected>> [list clipBox::onSelect %W]
 		bind $sizeBox <<ComboboxSelected>> [list clipBox::onSizeSelect %W]
+
+		setEnabled 0
 
 		pack $aBtn -side left
 		pack $aLbl -side left -fill x -expand true
@@ -128,6 +136,25 @@ namespace eval clipBox {
 
 	proc onSelect {w} {
 		focus $mediabar::frame
+	}
+
+	proc setEnabled {value} {
+		variable aBtn
+		variable bBtn
+		variable sizeBox
+		variable audioBox
+		variable formatBox
+		variable reencodeChk
+		variable cutBtn
+		if {$value > 0} {
+			set state "normal"
+		} else {
+			set state "disabled"
+		}
+		set children [list $aBtn $bBtn $sizeBox $audioBox $formatBox $reencodeChk $cutBtn]
+		foreach x $children {
+			$x config -state $state
+		}
 	}
 
 	proc reset {aFormat aDuration aSizes videoStream audioStreams} {
