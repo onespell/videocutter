@@ -4,8 +4,8 @@ namespace eval mpv {
 	variable mpvPath $setting::mpvPath
 	variable duration
 	variable pid
-	variable inReadChanId
-	variable inWriteChanId
+	variable fifo
+	variable fifoId
 	variable time
 	variable mute false
 
@@ -15,12 +15,16 @@ namespace eval mpv {
 		variable inReadChanId
 		variable inWriteChanId
 		variable time
+		variable fifo
+		variable fifoId
 		set wid [expr [winfo id $viewer::video]]
 		lassign [chan pipe] outReadChanId outWriteChanId
-		lassign [chan pipe] inReadChanId inWriteChanId
-		fconfigure $inWriteChanId -buffersize 0
-		set pid [exec >&@$outWriteChanId <@$inReadChanId $mpvPath --no-config --no-osc --osd-level=0 --volume=0 --start=+$position --wid=$wid $filePath &]
-		fileevent $outReadChanId readable [list mpv::readOutput $outReadChanId]
+		set fifo "/tmp/mpvsocket"
+		exec mkfifo $fifo
+		#set pid [exec >&@$outWriteChanId $mpvPath --input-ipc-server=$fifo --no-config --no-osc --osd-level=0 --volume=0 --start=+$position --wid=$wid $filePath &]
+		set pid [exec $mpvPath --input-ipc-server=$fifo --no-config --no-osc --osd-level=0 --volume=0 --start=+$position --wid=$wid $filePath &]
+		#fileevent $outReadChanId readable [list mpv::readOutput $outReadChanId]
+		set fifoId [open $fifo w+]
 		set time 0
 	}
 
@@ -30,21 +34,10 @@ namespace eval mpv {
 			return
 		}
 		gets $pipe line
-		if {[player::isPaused]} {
-			return
-		}
-		set t [extractTime $line]
-		if {$t ne ""} {
-			variable time
-			set time [util::toMillis $t]
-			mediabar::setTime $time
-			shotBox::setTime $time
-			clipBox::setTime $time
-		}
 	}
 
 	proc extractTime {line} {
-		puts $line
+		puts [string range [string trimleft $line "\n "] 0 2]
 		if {[string range $line 0 2] eq "AV:"} {
 			set q [string first "/" $line 3]
 			set result [string range $line 3 [expr $q - 1]]
@@ -102,8 +95,7 @@ namespace eval mpv {
 
 	proc pause {} {
 		#sendCommand "set pause yes"
-		#sendCommand "{ \"command\": \[\"set_property\", \"pause\", true\] }"
-		sendCommand "p"
+		sendCommand "{ \"command\": \[\"set_property\", \"pause\", true\] }"
 	}
 
 	proc play {} {
@@ -112,13 +104,13 @@ namespace eval mpv {
 
 	proc closeSession {} {
 		variable pid
-		variable inReadChanId
-		variable inWriteChanId
-		if {[info exists inWriteChanId]} {
+		variable fifo
+		variable fifoId
+		if {[info exists fifo]} {
 			sendCommand "quit"
-			close $inWriteChanId
-			close $inReadChanId
-			unset inWriteChanId inReadChanId
+			close $fifoId
+			exec unlink $fifo
+			unset fifo
 		}
 		if {[info exists pid]} {
 			exec kill -9 $pid
@@ -127,8 +119,11 @@ namespace eval mpv {
 	}
 
 	proc sendCommand {command} {
-		variable inWriteChanId
-		puts $inWriteChanId $command
-		#flush $inWriteChanId
+		variable fifoId
+		puts $fifoId $command
+		flush $fifoId
+		gets $fifoId result
+		puts $result
+		return $result
 	}
 }
