@@ -22,6 +22,7 @@ namespace eval mplayer {
 		set pid [exec >&@$outWriteChanId <@$inReadChanId $mplayerPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $filePath &]
 		fileevent $outReadChanId readable [list mplayer::readOutput $outReadChanId]
 		set time 0
+		pause
 	}
 
 	proc readOutput {pipe} {
