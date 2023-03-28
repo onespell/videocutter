@@ -23,12 +23,11 @@ namespace eval mpv {
 	}
 
 	proc setVolume {vol} {
-		return
 		if {[player::isPaused]} {
 			variable time
 			set t $time
 		}
-		sendCommand [format "{\"command\":\[\"set_property\",\"volume\",%d\]}" $vol]
+		sendCommand [format "{{\"command\":\[\"set_property\",\"volume\",%d\]}}" $vol]
 		if {[player::isPaused]} {
 			player::setPaused 0
 			player::pause
@@ -37,7 +36,6 @@ namespace eval mpv {
 	}
 
 	proc setMute {flag} {
-		return
 		variable mute
 		if {$flag ne $mute} {
 			set mute $flag
@@ -46,9 +44,9 @@ namespace eval mpv {
 				set t $time
 			}
 			if {$flag} {
-				sendCommand "{\"command\":\[\"set_property\",\"ao-mute\",true\]}"
+				sendCommand "{{\"command\":\[\"set_property\",\"mute\",true\]}}"
 			} else {
-				sendCommand "{\"command\":\[\"set_property\",\"ao-mute\",false\]}"
+				sendCommand "{{\"command\":\[\"set_property\",\"mute\",false\]}}"
 			}
 			if {[player::isPaused]} {
 				player::setPaused 0
@@ -66,8 +64,10 @@ namespace eval mpv {
 	proc goTo {millis} {
 		#set t [util::toTimeCode $millis]
 		#sendCommand [format "{\"command\":\[\"seek\",\"%s\"\]}" $t]
-		set t [expr $millis * 0.001]
-		sendCommand [format "{\"command\":\[\"set_property\",\"time-pos\",\"%f\"\]}" $t]
+		#set t [expr $millis * 0.001]
+		#sendCommand [format "{\"command\":\[\"set_property\",\"time-pos\",\"%f\"\]}" $t]
+		set t [util::toTimeCode $millis]
+		sendCommand [format "seek %s" $t]
 	}
 
 	proc pause {} {
@@ -82,7 +82,8 @@ namespace eval mpv {
 		variable pid
 		variable so
 		if {[info exists so]} {
-			sendCommand "{\"command\":\[\"quit\"\]}"
+			#sendCommand "{{\"command\":\[\"quit\"\]}}"
+			sendCommand "quit"
 			exec unlink $so
 			unset so
 		}
@@ -95,9 +96,8 @@ namespace eval mpv {
 	proc sendCommand {command} {
 		puts $command
 		variable so
-		set io [open "|socat - $so" r+]
-		puts $io $command
-		flush $io
+		#set io [open "|socat - $so" r+]
+		set io [open "| echo $command | socat - $so" r]
 		foreach line [split [read $io] \n] {
 			puts $line
 		}
