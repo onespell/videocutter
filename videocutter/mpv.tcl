@@ -32,7 +32,6 @@ namespace eval mpv {
 			return
 		}
 		set id [clock clicks -milliseconds]
-		#set cmd "{{\"command\":\[\"get_property\",\"time-pos\"\],\"request_id\":"
 		set cmd "{{\"command\":\[\"get_property\",\"playback-time\"\],\"request_id\":"
 		append cmd $id
 		append cmd "}}"
