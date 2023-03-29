@@ -9,8 +9,7 @@ namespace eval viewer {
 		set frame [frame $parent.framePlayer]
 
 		variable video
-		set video [frame $frame.video -container yes]
-		$video config -bg black
+		createVideo
 
 		mediabar::init $workdir $frame
 		pack $mediabar::frame -side bottom -fill x
@@ -19,7 +18,20 @@ namespace eval viewer {
 	}
 
 	proc setSize {width height} {
+		variable frame
+		set children [winfo children $frame]
 		variable video
+		if {[lsearch -exact $children $video] < 0} {
+			createVideo
+			pack $video -side bottom
+		}
 		$video config -width $width -height $height
+	}
+
+	proc createVideo {} {
+		variable frame
+		variable video
+		set video [frame $frame.video -container yes]
+		$video config -bg black
 	}
 }
