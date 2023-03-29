@@ -32,7 +32,6 @@ namespace eval player {
 		closeSession
 		mediabar::setEnabled 0
 		toolBox::setEnabled 0
-		set paused 0
 		set splash [wid::showWaitSplash [mc loading]]
 		set filePath [list $aFilePath]
 		session::setFilePath $filePath
@@ -47,6 +46,7 @@ namespace eval player {
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
 		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
 		eval [list "${p}::setInOut" $aFilePath $position]
+		set paused 1
 		if {$setting::muteOnStart} {
 			setMute true
 		}
