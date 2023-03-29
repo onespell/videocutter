@@ -62,10 +62,6 @@ namespace eval mpv {
 	}
 
 	proc goTo {millis} {
-		#set t [util::toTimeCode $millis]
-		#sendCommand [format "{\"command\":\[\"seek\",\"%s\"\]}" $t]
-		#set t [expr $millis * 0.001]
-		#sendCommand [format "{\"command\":\[\"set_property\",\"time-pos\",\"%f\"\]}" $t]
 		set t [util::toTimeCode $millis]
 		sendCommand [format "seek %s absolute" $t]
 	}
@@ -84,7 +80,6 @@ namespace eval mpv {
 		variable pid
 		variable so
 		if {[info exists so]} {
-			#sendCommand "{{\"command\":\[\"quit\"\]}}"
 			sendCommand "quit"
 			exec unlink $so
 			unset so
