@@ -46,7 +46,6 @@ namespace eval player {
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
 		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
 		eval [list "${p}::setInOut" $aFilePath $position]
-		set paused 1
 		if {$setting::muteOnStart} {
 			setMute true
 		}
@@ -60,6 +59,9 @@ namespace eval player {
 		mediabar::setEnabled 1
 		toolBox::setEnabled 1
 		log::info "open $filePath"
+		mediabar::setTime 0
+		shotBox::setTime 0
+		clipBox::setTime 0
 		wid::destroySplash $splash
 	}
 

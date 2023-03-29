@@ -7,6 +7,7 @@ namespace eval mpv {
 	variable so
 	variable time
 	variable mute false
+	variable period 100
 
 	proc setInOut {filePath position} {
 		variable mpvPath
@@ -17,9 +18,43 @@ namespace eval mpv {
 		variable so
 		set wid [expr [winfo id $viewer::video]]
 		set so "/tmp/mpv_socket"
-		set pid [exec $mpvPath --input-ipc-server=$so --no-osc --osd-level=0 --pause --volume=0 --start=+$position --wid=$wid $filePath &]
+		set pid [exec >&/dev/null $mpvPath --input-ipc-server=$so --no-osc --osd-level=0 --pause --volume=0 --start=+$position --wid=$wid $filePath &]
 		set time 0
+		player::setPaused 1
 		util::sleep 100
+		getPosition
+	}
+
+	proc getPosition {} {
+		variable period
+		if {[player::isPaused]} {
+			after $period mpv::getPosition
+			return
+		}
+		#set line [sendCommand "{{\"command\":\[\"get_property\",\"time-pos\"\]}}"]
+		set line [sendCommand "{{\"command\":\[\"get_property\",\"playback-time\"\]}}"]
+		if {[catch {set d [::json::json2dict $line]}]} {
+			after $period mpv::getPosition
+			return
+		}
+		if {[catch {set t [dict get $d "data"]}]} {
+			after $period mpv::getPosition
+			return
+		}
+		variable time
+		set time [util::toMillis $t]
+		mediabar::setTime $time
+		shotBox::setTime $time
+		clipBox::setTime $time
+		after $period mpv::getPosition
+	}
+
+	proc extractTime {line} {
+		set p [expr [string first "\"data\":" $line] + 7]
+		set q [expr [string first "," $line $p] - 1]
+		set seconds [string trim [string range $line $p $q]]
+		set millis [util::toMillis $seconds]
+		return $millis
 	}
 
 	proc setVolume {vol} {
@@ -74,12 +109,11 @@ namespace eval mpv {
 	}
 
 	proc sendCommand {command} {
-		puts $command
 		variable so
 		#set io [open "|socat - $so" r+]
 		set io [open "| echo $command | socat - $so" r]
 		foreach line [split [read $io] \n] {
-			puts $line
+			return $line
 		}
 	}
 }
