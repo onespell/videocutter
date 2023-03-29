@@ -23,35 +23,17 @@ namespace eval mpv {
 	}
 
 	proc setVolume {vol} {
-		if {[player::isPaused]} {
-			variable time
-			set t $time
-		}
 		sendCommand [format "{{\"command\":\[\"set_property\",\"volume\",%d\]}}" $vol]
-		if {[player::isPaused]} {
-			player::setPaused 0
-			player::pause
-			goTo $t
-		}
 	}
 
 	proc setMute {flag} {
 		variable mute
 		if {$flag ne $mute} {
 			set mute $flag
-			if {[player::isPaused]} {
-				variable time
-				set t $time
-			}
 			if {$flag} {
 				sendCommand "{{\"command\":\[\"set_property\",\"mute\",true\]}}"
 			} else {
 				sendCommand "{{\"command\":\[\"set_property\",\"mute\",false\]}}"
-			}
-			if {[player::isPaused]} {
-				player::setPaused 0
-				player::pause
-				goTo $t
 			}
 		}
 	}
@@ -81,11 +63,12 @@ namespace eval mpv {
 		variable so
 		if {[info exists so]} {
 			sendCommand "quit"
+			util::sleep 100
 			exec unlink $so
 			unset so
 		}
 		if {[info exists pid]} {
-			exec kill -9 $pid
+			if {[catch {exec kill -9 $pid} result]} {}
 			unset pid
 		}
 	}
