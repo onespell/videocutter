@@ -31,9 +31,21 @@ namespace eval mpv {
 			after $period mpv::getPosition
 			return
 		}
-		#set line [sendCommand "{{\"command\":\[\"get_property\",\"time-pos\"\]}}"]
-		set line [sendCommand "{{\"command\":\[\"get_property\",\"playback-time\"\]}}"]
+		set id [clock clicks -milliseconds]
+		#set cmd "{{\"command\":\[\"get_property\",\"time-pos\"\],\"request_id\":"
+		set cmd "{{\"command\":\[\"get_property\",\"playback-time\"\],\"request_id\":"
+		append cmd $id
+		append cmd "}}"
+		set line [sendCommand $cmd]
 		if {[catch {set d [::json::json2dict $line]}]} {
+			after $period mpv::getPosition
+			return
+		}
+		if {[catch {set reqid [dict get $d "request_id"]}]} {
+			after $period mpv::getPosition
+			return
+		}
+		if {$reqid ne $id} {
 			after $period mpv::getPosition
 			return
 		}
