@@ -15,11 +15,13 @@ namespace eval mpv {
 		variable inReadChanId
 		variable inWriteChanId
 		variable time
+		variable mute
 		variable so
 		set wid [expr [winfo id $viewer::video]]
 		set so "/tmp/mpv_socket"
 		set pid [exec >&/dev/null $mpvPath --input-ipc-server=$so --no-osc --osd-level=0 --no-config --no-terminal --no-input-builtin-bindings --no-input-default-bindings --pause --volume=0 --start=+$position --wid=$wid $filePath &]
 		set time 0
+		set mute false
 		player::setPaused 1
 		util::sleep 100
 		getPosition
