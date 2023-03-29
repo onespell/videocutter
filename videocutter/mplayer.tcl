@@ -15,14 +15,17 @@ namespace eval mplayer {
 		variable inReadChanId
 		variable inWriteChanId
 		variable time
+		variable mute
+		player::setPaused 0
+		set mute false
 		set wid [expr [winfo id $viewer::video]]
 		lassign [chan pipe] outReadChanId outWriteChanId
 		lassign [chan pipe] inReadChanId inWriteChanId
 		fconfigure $inWriteChanId -buffersize 0
 		set pid [exec >&@$outWriteChanId <@$inReadChanId $mplayerPath -slave -identify -softvol -osdlevel 0 -volume 0 -ss $position -wid $wid $filePath &]
 		fileevent $outReadChanId readable [list mplayer::readOutput $outReadChanId]
+		player::pause
 		set time 0
-		pause
 	}
 
 	proc readOutput {pipe} {

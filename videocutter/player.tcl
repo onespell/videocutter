@@ -5,7 +5,7 @@ namespace eval player {
 	namespace export isPaused setPaused loadFile pause play setVolume setMute goTo closeSession
 
 	variable p
-	variable paused
+	variable paused 0
 
 	proc init {} {
 		variable p
