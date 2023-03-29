@@ -67,7 +67,7 @@ namespace eval mpv {
 		#set t [expr $millis * 0.001]
 		#sendCommand [format "{\"command\":\[\"set_property\",\"time-pos\",\"%f\"\]}" $t]
 		set t [util::toTimeCode $millis]
-		sendCommand [format "seek %s" $t]
+		sendCommand [format "seek %s absolute" $t]
 	}
 
 	proc pause {} {
