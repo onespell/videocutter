@@ -71,11 +71,13 @@ namespace eval mpv {
 	}
 
 	proc pause {} {
-		sendCommand "{{\"command\":\[\"set_property\",\"pause\",true\]}}"
+		#sendCommand "{{\"command\":\[\"set_property\",\"pause\",true\]}}"
+		sendCommand "cycle pause"
 	}
 
 	proc play {} {
-		sendCommand "{{\"command\":\[\"set_property\",\"pause\",false\]}}"
+		#sendCommand "{{\"command\":\[\"set_property\",\"pause\",false\]}}"
+		sendCommand "cycle pause"
 	}
 
 	proc closeSession {} {
