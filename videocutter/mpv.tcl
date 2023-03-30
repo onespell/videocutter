@@ -1,5 +1,3 @@
-source json.tcl
-
 namespace eval mpv {
 	namespace export setInOut goTo pause play setVolume setMute isMuted
 

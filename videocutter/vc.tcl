@@ -28,6 +28,7 @@ source $workdir/shotbox.tcl
 source $workdir/clipbox.tcl
 source $workdir/jobbox.tcl
 source $workdir/mediabar.tcl
+source $workdir/json.tcl
 
 msgcat::mclocale $setting::locale
 session::init $setting::initialDir $setting::fileTypes $setting::defaultVolume
