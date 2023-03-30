@@ -50,7 +50,7 @@ namespace eval mpv {
 		set cmd "{{\"command\":\[\"get_property\",\"playback-time\"\],\"request_id\":"
 		append cmd $id
 		append cmd "}}"
-		set line [sendCommand $cmd]
+		set line [sendCommandAndRead $cmd]
 		if {[catch {set d [::json::json2dict $line]}]} {
 			after $period mpv::getPosition
 			return
@@ -136,13 +136,18 @@ namespace eval mpv {
 		}
 	}
 
-	proc sendCommand {command} {
+	proc sendCommandAndRead {command} {
 		variable so
-		#set io [open "|socat - $so" r+]
 		set io [open "| echo $command | socat - $so" r]
 		foreach line [split [read $io] \n] {
-			close $io
+			catch {close $io}
 			return $line
 		}
+	}
+
+	proc sendCommand {command} {
+		variable so
+		set io [open "| echo $command | socat - $so" r]
+		catch {close $io}
 	}
 }
