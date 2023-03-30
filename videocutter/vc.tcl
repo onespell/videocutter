@@ -44,8 +44,8 @@ pack $viewer::frame -side right -fill both -expand true
 player::init
 
 #player::loadFile "../test/test2.mkv" 0
-player::loadFile "../test/test.mp4" 0
-return
+#player::loadFile "../test/test.mp4" 0
+#return
 
 for {set i 0} {$i < [expr $argc - 1]} {incr i +1} {
 	switch -exact -- [lindex $argv $i] {
