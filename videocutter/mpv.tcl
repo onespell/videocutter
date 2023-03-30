@@ -8,6 +8,7 @@ namespace eval mpv {
 	variable time
 	variable mute false
 	variable period 100
+	variable shutdown 0
 
 	proc setInOut {filePath position} {
 		variable mpvPath
@@ -17,6 +18,8 @@ namespace eval mpv {
 		variable time
 		variable mute
 		variable so
+		variable shutdown
+		set shutdown 0
 		set wid [expr [winfo id $viewer::video]]
 		set so "/tmp/mpv_socket"
 		set pid [exec >&/dev/null $mpvPath --input-ipc-server=$so --no-osc --osd-level=0 --no-config --no-terminal --no-input-builtin-bindings --no-input-default-bindings --pause --volume=0 --start=+$position --wid=$wid $filePath &]
@@ -34,6 +37,10 @@ namespace eval mpv {
 	}
 
 	proc getPosition {} {
+		variable shutdown
+		if {$shutdown} {
+			return
+		}
 		variable period
 		if {[player::isPaused]} {
 			after $period mpv::getPosition
@@ -115,6 +122,8 @@ namespace eval mpv {
 	proc closeSession {} {
 		variable pid
 		variable so
+		variable shutdown
+		set shutdown 1
 		if {[info exists so]} {
 			sendCommand "quit"
 			util::sleep 100
