@@ -27,7 +27,7 @@ namespace eval mplayer {
 		player::pause
 		set time 0
 		if {$session::volume > 0} {
-			player::setVolume $session::volume
+			player::setVolumeForcibly $session::volume
 		}
 		if {$setting::muteOnStart} {
 			player::setMute true
