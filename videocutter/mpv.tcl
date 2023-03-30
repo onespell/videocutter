@@ -141,6 +141,7 @@ namespace eval mpv {
 		#set io [open "|socat - $so" r+]
 		set io [open "| echo $command | socat - $so" r]
 		foreach line [split [read $io] \n] {
+			close $io
 			return $line
 		}
 	}
