@@ -1,5 +1,3 @@
-source json.tcl
-
 namespace eval job {
 	namespace export shotJobType clipJobType getJobType getFormat getTime getFinish getSize getVideo getAudio newShotJob newClipJob
 
