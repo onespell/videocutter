@@ -46,13 +46,6 @@ namespace eval player {
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
 		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
 		eval [list "${p}::setInOut" $aFilePath $position]
-		if {$setting::muteOnStart} {
-			setMute true
-		}
-		if {$session::volume > 0} {
-			setVolumeForcibly $session::volume
-		}
-		goTo 0
 		mediabar::reset $duration $paused 0 $session::volume [eval [list "${p}::isMuted"]] $keyFrames
 		shotBox::reset
 		jobBox::reset

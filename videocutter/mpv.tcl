@@ -25,6 +25,12 @@ namespace eval mpv {
 		player::setPaused 1
 		util::sleep 100
 		getPosition
+		if {$setting::muteOnStart} {
+			player::setMute true
+		}
+		if {$session::volume > 0} {
+			player::setVolumeForcibly $session::volume
+		}
 	}
 
 	proc getPosition {} {

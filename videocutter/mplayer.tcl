@@ -26,6 +26,13 @@ namespace eval mplayer {
 		fileevent $outReadChanId readable [list mplayer::readOutput $outReadChanId]
 		player::pause
 		set time 0
+		if {$session::volume > 0} {
+			player::setVolume $session::volume
+		}
+		if {$setting::muteOnStart} {
+			player::setMute true
+		}
+		goTo 0
 	}
 
 	proc readOutput {pipe} {
