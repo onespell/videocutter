@@ -19,6 +19,7 @@ namespace eval analysis {
 			}
 			break
 		}
+		close $input
 		set result {}
 		lappend result [size::newSize $width $height]
 		if {[catch {set alternatives [dict get $setting::aspectRatios $ratio]}]} {
@@ -47,6 +48,7 @@ namespace eval analysis {
 				v {lappend video [stream::newVideoStream $id $caption]}
 			}
 		}
+		close $input
 		return [list $video $audio]
 	}
 
@@ -91,6 +93,7 @@ namespace eval analysis {
 	proc getDuration {filePath} {
 		set input [open "| $setting::ffprobePath -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $filePath" r]
 		set duration [lindex [split [read $input] \n] 0]
+		close $input
 		if {$duration ne ""} {
 			set result [util::toMillis $duration]
 		} else {
