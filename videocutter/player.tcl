@@ -1,3 +1,12 @@
+switch -exact -- $setting::player {
+	mpv {
+		source $workdir/mpv.tcl
+	}
+	mplayer {
+		source $workdir/mplayer.tcl
+	}
+}
+
 namespace eval player {
 	namespace export isPaused setPaused loadFile pause play setVolume setMute goTo closeSession
 
@@ -10,11 +19,9 @@ namespace eval player {
 		switch -exact -- $setting::player {
 			mpv {
 				set p "mpv"
-				source $workdir/mpv.tcl
 			}
 			mplayer {
 				set p "mplayer"
-				source $workdir/mplayer.tcl
 			}
 		}
 	}
