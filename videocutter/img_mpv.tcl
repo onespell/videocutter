@@ -11,10 +11,16 @@ namespace eval img {
 		lappend cmd "--mute=yes" "--frames=1" "--start=$t" "--vo=image" "--vo-image-outdir=$dir"
 		switch -exact -- $format {
 			WEBP {
-				lappend cmd "--vo-image-format=webp" "--vo-image-webp-quality=80"
+				lappend cmd "--vo-image-format=webp" "--vo-image-webp-lossless=yes" "--vo-image-webp-quality=80" "--vo-image-webp-compression=4"
+			}
+			JPEG {
+				lappend cmd "--vo-image-format=jpg" "--vo-image-jpeg-quality=90"
+			}
+			PNG {
+				lappend cmd "--vo-image-format=png" "--vo-image-png-compression=7" "--vo-image-png-filter=5"
 			}
 			default {
-				
+				return 1
 			}
 		}
 		lappend cmd {*}$sourceFile
