@@ -94,7 +94,7 @@ namespace eval jobBox {
 				wid::incrProgress 1
 			}
 			if {$result} {
-				tk_messageBox -type ok -icon error -message [mc ffmpegFail]
+				tk_messageBox -type ok -icon error -message [mc jobFail]
 			} else {
 				reset
 			}
