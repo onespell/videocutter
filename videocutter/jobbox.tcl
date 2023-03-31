@@ -5,6 +5,9 @@ switch -exact -- $setting::imageTool {
 	mpv {
 		source $workdir/img_mpv.tcl
 	}
+	cwebp {
+		source $workdir/img_cwebp.tcl
+	}
 }
 
 namespace eval jobBox {

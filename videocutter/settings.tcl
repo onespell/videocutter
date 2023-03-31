@@ -2,13 +2,14 @@ namespace eval setting {
 	namespace export player imageTool locale numOfProcessors initialDir logPath mplayerPath ffprobePath ffmpegPath fileTypes imageFormats videoFormats defaultVolume muteOnStart aspectRatios ffmpegReport setFfmpegReport
 
 	variable player mpv # mpv mplayer
-	variable imageTool mpv # ffmpeg mpv cwebp
+	variable imageTool cwebp # ffmpeg mpv cwebp
 	variable locale en # en ru
 	variable numOfProcessors 16
 	variable initialDir "/home"
 	variable logPath "/tmp/vc.log"
 	variable mplayerPath "/usr/bin/mplayer"
 	variable mpvPath "/usr/bin/mpv"
+	variable cwebpPath "/usr/bin/cwebp"
 	variable ffprobePath "/usr/bin/ffprobe"
 	variable ffmpegPath "/usr/bin/ffmpeg"
 	variable ffmpegReport off
