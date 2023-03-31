@@ -1,6 +1,3 @@
-source $workdir/mplayer.tcl
-source $workdir/mpv.tcl
-
 namespace eval player {
 	namespace export isPaused setPaused loadFile pause play setVolume setMute goTo closeSession
 
@@ -9,9 +6,16 @@ namespace eval player {
 
 	proc init {} {
 		variable p
+		set workdir [file dirname [file normalize [info script]]]
 		switch -exact -- $setting::player {
-			mpv {set p "mpv"}
-			mplayer {set p "mplayer"}
+			mpv {
+				set p "mpv"
+				source $workdir/mpv.tcl
+			}
+			mplayer {
+				set p "mplayer"
+				source $workdir/mplayer.tcl
+			}
 		}
 	}
 

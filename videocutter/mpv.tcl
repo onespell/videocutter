@@ -43,7 +43,7 @@ namespace eval mpv {
 		}
 		variable period
 		if {[player::isPaused]} {
-			after $period mpv::getPosition
+			after $period player::mpv::getPosition
 			return
 		}
 		set id [clock clicks -milliseconds]
