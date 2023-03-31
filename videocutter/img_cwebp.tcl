@@ -25,25 +25,43 @@ namespace eval img {
 			}
 		}
 		lappend cmd {*}$sourceFile
+		set resp {}
 		if {$dryRun} {
-			return $cmd
+			lappend resp $cmd
 		} else {
 			if {[catch {exec -ignorestderr {*}$cmd} result]} {
 				return 1
 			}
 		}
-		set f [lindex [glob -directory $dir *] 0]
 		if {$format eq "WEBP"} {
 			variable cwebpPath
-			set cmd [list $cwebpPath]
-			lappend cmd -q 80 $f -o $resultFile
-			if {[catch {exec -ignorestderr {*}$cmd} result]} {
-				return 1
+			if {$dryRun} {
+				set cmd [list $cwebpPath]
+				lappend cmd -q 80 "..." -o $resultFile
+				lappend resp $cmd
+			} else {
+				set f [lindex [glob -directory $dir *] 0]
+				set cmd [list $cwebpPath]
+				lappend cmd -q 80 $f -o $resultFile
+				if {[catch {exec -ignorestderr {*}$cmd} result]} {
+					return 1
+				}
 			}
 		} else {
-			file rename $f $resultFile
+			if {$dryRun} {
+				set cmd {}
+				lappend cmd "mv" "..." $resultFile
+				lappend resp $cmd
+			} else {
+				set f [lindex [glob -directory $dir *] 0]
+				file rename $f $resultFile
+			}
 		}
 		file delete -force $dir
-		return 0
+		if {$dryRun} {
+			return $resp
+		} else {
+			return 0
+		}
 	}
 }
