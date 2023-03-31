@@ -1,4 +1,4 @@
-namespace eval mpv {
+namespace eval sysplayer {
 	namespace export setInOut goTo pause play setVolume setMute isMuted
 
 	variable mpvPath $setting::mpvPath
@@ -43,7 +43,7 @@ namespace eval mpv {
 		}
 		variable period
 		if {[player::isPaused]} {
-			after $period mpv::getPosition
+			after $period sysplayer::getPosition
 			return
 		}
 		set id [clock clicks -milliseconds]
@@ -52,19 +52,19 @@ namespace eval mpv {
 		append cmd "}}"
 		set line [sendCommandAndRead $cmd]
 		if {[catch {set d [::json::json2dict $line]}]} {
-			after $period mpv::getPosition
+			after $period sysplayer::getPosition
 			return
 		}
 		if {[catch {set reqid [dict get $d "request_id"]}]} {
-			after $period mpv::getPosition
+			after $period sysplayer::getPosition
 			return
 		}
 		if {$reqid ne $id} {
-			after $period mpv::getPosition
+			after $period sysplayer::getPosition
 			return
 		}
 		if {[catch {set t [dict get $d "data"]}]} {
-			after $period mpv::getPosition
+			after $period sysplayer::getPosition
 			return
 		}
 		variable time
@@ -72,7 +72,7 @@ namespace eval mpv {
 		mediabar::setTime $time
 		shotBox::setTime $time
 		clipBox::setTime $time
-		after $period mpv::getPosition
+		after $period sysplayer::getPosition
 	}
 
 	proc extractTime {line} {

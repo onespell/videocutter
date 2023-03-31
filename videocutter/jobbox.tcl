@@ -1,7 +1,12 @@
+switch -exact -- $setting::imageTool {
+	ffmpeg {
+		source $workdir/conv_ffmpeg.tcl
+	}
+}
+
 namespace eval jobBox {
 	namespace export frame init reset add isEmpty insertJobs unmarshallClipJob setEnabled
 
-	variable c
 	variable frame
 	variable dryRun
 	variable list
@@ -15,15 +20,6 @@ namespace eval jobBox {
 	variable runBtn
 
 	proc init {parent} {
-		variable c
-		set workdir [file dirname [file normalize [info script]]]
-		switch -exact -- $setting::imageTool {
-			ffmpeg {
-				set c "conv_ffmpeg"
-				source $workdir/conv_ffmpeg.tcl
-			}
-		}
-
 		variable frame
 		set frame [frame $parent.frameJobBox -relief groove -borderwidth 1 -padx 5 -pady 5]
 
@@ -101,11 +97,10 @@ namespace eval jobBox {
 	}
 
 	proc doShotJob {job dryRun numOfJobs} {
-		variable c
 		set sourceFile $session::filePath
 		set format [job::getFormat $job]
 		set resultFile [file::getNext {*}$sourceFile $format $numOfJobs]
-		return [${c}::convert $job $format $sourceFile $resultFile $dryRun]
+		return [img::convert $job $format $sourceFile $resultFile $dryRun]
 	}
 
 	proc doClipJob {job dryRun numOfJobs} {

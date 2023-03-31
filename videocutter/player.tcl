@@ -10,20 +10,10 @@ switch -exact -- $setting::player {
 namespace eval player {
 	namespace export isPaused setPaused loadFile pause play setVolume setMute goTo closeSession
 
-	variable p
 	variable paused 0
 
 	proc init {} {
-		variable p
 		set workdir [file dirname [file normalize [info script]]]
-		switch -exact -- $setting::player {
-			mpv {
-				set p "mpv"
-			}
-			mplayer {
-				set p "mplayer"
-			}
-		}
 	}
 
 	proc isPaused {} {
@@ -37,7 +27,6 @@ namespace eval player {
 	}
 
 	proc loadFile {aFilePath position} {
-		variable p
 		variable duration
 		variable paused
 		closeSession
@@ -56,8 +45,8 @@ namespace eval player {
 		set format [analysis::getFormat $filePath]
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams
 		clipBox::reset $format $duration $sizes [lindex $videoStreams 0] $audioStreams
-		eval [list "${p}::setInOut" $aFilePath $position]
-		mediabar::reset $duration $paused 0 $session::volume [eval [list "${p}::isMuted"]] $keyFrames
+		eval [list "sysplayer::setInOut" $aFilePath $position]
+		mediabar::reset $duration $paused 0 $session::volume [eval [list "sysplayer::isMuted"]] $keyFrames
 		shotBox::reset
 		jobBox::reset
 		mediabar::setEnabled 1
@@ -73,8 +62,7 @@ namespace eval player {
 		variable paused
 		if {!$paused} {
 			set paused 1
-			variable p
-			set cmd [list "${p}::pause"]
+			set cmd [list "sysplayer::pause"]
 			eval $cmd
 		}
 	}
@@ -83,8 +71,7 @@ namespace eval player {
 		variable paused
 		if {$paused} {
 			set paused 0
-			variable p
-			set cmd [list "${p}::play"]
+			set cmd [list "sysplayer::play"]
 			eval $cmd
 		}
 	}
@@ -97,28 +84,24 @@ namespace eval player {
 
 	proc setVolumeForcibly {vol} {
 		session::setVolume $vol
-		variable p
-		set cmd [list "${p}::setVolume" $vol]
+		set cmd [list "sysplayer::setVolume" $vol]
 		eval $cmd
 	}
 
 	proc setMute {flag} {
-		variable p
-		set cmd [list "${p}::setMute" $flag]
+		set cmd [list "sysplayer::setMute" $flag]
 		eval $cmd
 	}
 
 	proc goTo {millis} {
-		variable p
-		set cmd [list "${p}::goTo" $millis]
+		set cmd [list "sysplayer::goTo" $millis]
 		eval $cmd
 		shotBox::setTime $millis
 		clipBox::setTime $millis
 	}
 
 	proc closeSession {} {
-		variable p
-		set cmd [list "${p}::closeSession"]
+		set cmd [list "sysplayer::closeSession"]
 		eval $cmd
 	}
 }

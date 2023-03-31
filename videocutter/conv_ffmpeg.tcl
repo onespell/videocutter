@@ -1,4 +1,4 @@
-namespace eval conv_ffmpeg {
+namespace eval img {
 
 	variable ffmpegPath $setting::ffmpegPath
 
