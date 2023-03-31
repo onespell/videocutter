@@ -4,6 +4,7 @@ package require Tcl 8.6
 package require tksvg
 package require BWidget
 package require Thread
+package require fileutil
 interp alias {} help {} DynamicHelp::register
 
 set workdir [file dirname [file normalize [info script]]]

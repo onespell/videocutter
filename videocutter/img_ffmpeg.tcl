@@ -1,4 +1,5 @@
 namespace eval img {
+	namespace export convert
 
 	variable ffmpegPath $setting::ffmpegPath
 

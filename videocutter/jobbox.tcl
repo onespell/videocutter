@@ -1,6 +1,9 @@
 switch -exact -- $setting::imageTool {
 	ffmpeg {
-		source $workdir/conv_ffmpeg.tcl
+		source $workdir/img_ffmpeg.tcl
+	}
+	mpv {
+		source $workdir/img_mpv.tcl
 	}
 }
 
