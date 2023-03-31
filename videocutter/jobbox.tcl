@@ -110,7 +110,7 @@ namespace eval jobBox {
 	}
 
 	proc doClipJob {job dryRun numOfJobs} {
-		variable ffmpegPath
+		set ffmpegPath $setting::ffmpegPath
 		set sourceFile $session::filePath
 		set format [job::getFormat $job]
 		set resultFile [file::getNext {*}$sourceFile $format $numOfJobs]
