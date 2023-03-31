@@ -11,7 +11,7 @@ namespace eval img {
 		lappend cmd "--mute=yes" "--frames=1" "--start=$t" "--vo=image" "--vo-image-outdir=$dir"
 		switch -exact -- $format {
 			WEBP {
-				lappend cmd "--vo-image-format=webp" "--vo-image-webp-lossless=yes" "--vo-image-webp-quality=80" "--vo-image-webp-compression=4"
+				lappend cmd "--vo-image-format=webp" "--vo-image-webp-lossless=no" "--vo-image-webp-quality=80" "--vo-image-webp-compression=4"
 			}
 			JPEG {
 				lappend cmd "--vo-image-format=jpg" "--vo-image-jpeg-quality=90"
