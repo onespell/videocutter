@@ -36,7 +36,7 @@ namespace eval img {
 		if {$format eq "WEBP"} {
 			variable cwebpPath
 			set cmd [list $cwebpPath]
-			lappend cmd -q 80 $f -o {*}$resultFile
+			lappend cmd -q 80 $f -o $resultFile
 			if {[catch {exec -ignorestderr {*}$cmd} result]} {
 				return 1
 			}
