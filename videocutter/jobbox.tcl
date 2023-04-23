@@ -31,7 +31,7 @@ namespace eval jobBox {
 
 		variable list
 		# set list [listbox $frame.list -selectmode extended]
-		set list [wid::scrolledListbox $frame.scrolledList -selectmode extended -width 40]
+		set list [wid::scrolledListbox $frame.scrolledList -selectmode extended -width 40 -height 1000]
 
 		set frame1 [frame $frame.frame1]
 		variable dryRun
@@ -54,8 +54,8 @@ namespace eval jobBox {
 
 		pack $dryRunChk -side left
 		pack $runBtn -side left -fill x -expand true
-		pack $frame.scrolledList -side top -fill both -expand true
-		pack $frame1 -side top -fill x -expand true
+		pack $frame1 -side bottom -fill x -expand true
+		pack $frame.scrolledList -side bottom -fill both -expand true
 	}
 
 	proc run {} {
