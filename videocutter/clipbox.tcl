@@ -83,7 +83,7 @@ namespace eval clipBox {
 		} else {
 			set pSize [dict get $sizes $size]
 		}
-		if {$audio eq $defaultAudio} {
+		if {![info exists audio] || $audio eq $defaultAudio} {
 			set pAudio ""
 		} else {
 			set pAudio [dict get $audioStreams $audio]
