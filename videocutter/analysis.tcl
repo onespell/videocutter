@@ -30,6 +30,17 @@ namespace eval analysis {
 				lappend result $alternative
 			}
 		}
+		foreach alternative $setting::ratioWildcards {
+			set w [size::getWidth $alternative]
+			set h [size::getHeight $alternative]
+			if {$w eq "*"} {
+				if {$height > $h} {
+					lappend result $alternative
+				}
+			} elseif {$width > $w} {
+				lappend result $alternative
+			}
+		}
 		return $result
 	}
 

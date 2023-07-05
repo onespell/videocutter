@@ -124,7 +124,15 @@ namespace eval jobBox {
 		if {$frameSize eq ""} {
 			lappend cmd "-c" "copy"
 		} else {
-			lappend cmd "-vf" [format "scale=%d:%d" [size::getWidth $frameSize] [size::getHeight $frameSize]] "-c:v" "libx264" "-crf" "18" "-preset" "veryslow" "-c:a" "copy" "-c:s" "copy"
+			set w [size::getWidth $frameSize]
+			if {$w eq "*"} {
+				set w "trunc(oh*a/2)*2"
+			}
+			set h [size::getHeight $frameSize]
+			if {$h eq "*"} {
+				set h "trunc(ow/a/2)*2"
+			}
+			lappend cmd "-vf" [format "scale=%s:%s" $w $h] "-c:v" "libx264" "-crf" "18" "-preset" "veryslow" "-c:a" "copy" "-c:s" "copy"
 		}
 		set audio [job::getAudio $job]
 		if {$audio ne ""} {
