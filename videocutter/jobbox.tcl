@@ -42,6 +42,7 @@ namespace eval jobBox {
 		set runBtn [button $frame1.button -text [mc run] -command jobBox::run]
 
 		bind $list "<Delete>" jobBox::onDelete
+		bind $list "<KP_Delete>" jobBox::onDelete
 		bind $list "<Double-1>" {
 			set selected [$jobBox::list curselection]
 			set idx [lindex $selected 0]

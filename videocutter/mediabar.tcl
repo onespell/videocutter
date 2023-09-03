@@ -65,7 +65,9 @@ namespace eval mediabar {
 		switchMuteBtnMode
 
 		bind . "<Key-Down>" mediabar::rewind
+		bind . "<Key-KP_Down>" mediabar::rewind
 		bind . "<Key-Up>" mediabar::forward
+		bind . "<Key-KP_Up>" mediabar::forward
 
 		setEnabled 0
 
