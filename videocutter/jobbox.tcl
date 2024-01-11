@@ -133,7 +133,11 @@ namespace eval jobBox {
 			if {$h eq "*"} {
 				set h "trunc(ow/a/2)*2"
 			}
-			lappend cmd "-vf" [format "scale=%s:%s" $w $h] "-c:v" "libx264" "-crf" "18" "-preset" "veryslow" "-c:a" "copy" "-c:s" "copy"
+			set vcodec "libx264"
+			if {[string tolower $format] eq "webm"} {
+				set vcodec "libvpx-vp9"
+			}
+			lappend cmd "-vf" [format "scale=%s:%s" $w $h] "-c:v" $vcodec "-crf" "18" "-preset" "veryslow" "-c:a" "copy" "-c:s" "copy"
 		}
 		set audio [job::getAudio $job]
 		if {$audio ne ""} {
