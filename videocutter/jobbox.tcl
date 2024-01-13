@@ -127,11 +127,13 @@ namespace eval jobBox {
 		} else {
 			set w [size::getWidth $frameSize]
 			if {$w eq "*"} {
-				set w "trunc(oh*a/2)*2"
+				# set w "trunc(oh*a/2)*2"
+				set w "-1"
 			}
 			set h [size::getHeight $frameSize]
 			if {$h eq "*"} {
-				set h "trunc(ow/a/2)*2"
+				# set h "trunc(ow/a/2)*2"
+				set h "-1"
 			}
 			set vcodec "libx264"
 			if {[string tolower $format] eq "webm"} {
