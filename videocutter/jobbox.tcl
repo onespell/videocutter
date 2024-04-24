@@ -150,6 +150,8 @@ namespace eval jobBox {
 				lappend cmd "-map" [format "0:%s" $videoId]
 				lappend cmd "-map" [format "0:%s" $audioId]
 			}
+		} else {
+			lappend cmd "-map" "0"
 		}
 		lappend cmd "-y"
 		lappend cmd $resultFile
