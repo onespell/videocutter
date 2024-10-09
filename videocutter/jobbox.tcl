@@ -65,10 +65,11 @@ namespace eval jobBox {
 		if {$numOfJobs == 0} {
 			return
 		}
+		set sorted [lsort -command compareJobs $items]
 		variable dryRun
 		if {$dryRun} {
 			set msg {}
-			foreach job $items {
+			foreach job $sorted {
 				set type [job::getJobType $job]
 				if {$type eq $job::shotJobType} {
 					append msg [doShotJob $job $dryRun $numOfJobs]
@@ -82,7 +83,7 @@ namespace eval jobBox {
 		} else {
 			set splash [wid::showProgressSplash [mc executing] [llength $items]]
 			set result 0
-			foreach job $items {
+			foreach job $sorted {
 				set type [job::getJobType $job]
 				if {$type eq $job::shotJobType} {
 					set result [doShotJob $job $dryRun $numOfJobs]
@@ -100,6 +101,18 @@ namespace eval jobBox {
 				reset
 			}
 			wid::destroySplash $splash
+		}
+	}
+
+	proc compareJobs {x y} {
+		set timeX [job::getTime $x]
+		set timeY [job::getTime $y]
+		if {$timeX < $timeY} {
+			return -1
+		} elseif {$timeX > $timeY} {
+			return 1
+		} else {
+			return 0
 		}
 	}
 
