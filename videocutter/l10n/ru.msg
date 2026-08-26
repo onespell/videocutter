@@ -9,6 +9,8 @@ mcset ru play воспроизведение
 mcset ru pause пауза
 mcset ru prevKeyFrame "пред. опорный кадр"
 mcset ru nextKeyFrame "след. опорный кадр"
+mcset ru refineLeft "уточнение влево"
+mcset ru refineRight "уточнение вправо"
 mcset ru mute "выкл. звук"
 mcset ru unmute "вкл. звук"
 mcset ru freezeFrame стоп-кадр

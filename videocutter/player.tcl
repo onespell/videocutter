@@ -41,6 +41,7 @@ namespace eval player {
 		set height [size::getHeight $size]
 		set keyFrames [analysis::getKeyFrames $filePath]
 		viewer::setSize $width $height
+		viewer::updateMinSize
 		set duration [analysis::getDuration $filePath]
 		set format [analysis::getFormat $filePath]
 		lassign [analysis::getMediaStreams $filePath] videoStreams audioStreams

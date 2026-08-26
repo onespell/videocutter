@@ -6,6 +6,8 @@ namespace eval mediabar {
 	variable pauseBtnState; # 0 - playing, 1 - on pause
 	variable timeScl
 	variable rewindBtn
+	variable refineLeftBtn
+	variable refineRightBtn
 	variable forwardBtn
 	variable volumeScl
 	variable muteBtn
@@ -13,18 +15,18 @@ namespace eval mediabar {
 	variable playImg
 	variable pauseImg
 	variable rewindImg
+	variable refineLeftImg
+	variable refineRightImg
 	variable forwardImg
 	variable muteImg
 	variable unmuteImg
 	variable time
 	variable volume
 	variable keyFrames
-	variable playImg
-	variable pauseImg
-	variable rewindImg
-	variable forwardImg
-	variable muteImg
-	variable unmuteImg
+	variable refine ""
+	variable duration 0
+	variable updatingTimeScale 0
+	variable mediaEnabled 0
 
 	proc init {workdir parent} {
 		variable frame
@@ -33,13 +35,23 @@ namespace eval mediabar {
 		image create photo mediabar::playImg -file $workdir/svg/play.svg -format {svg -scaletoheight 24}
 		image create photo mediabar::pauseImg -file $workdir/svg/pause.svg -format {svg -scaletoheight 24}
 		image create photo mediabar::rewindImg -file $workdir/svg/rewind.svg -format {svg -scaletoheight 24}
+		image create photo mediabar::refineLeftImg -file $workdir/svg/refineLeft.svg -format {svg -scaletoheight 24}
+		image create photo mediabar::refineRightImg -file $workdir/svg/refineRight.svg -format {svg -scaletoheight 24}
 		image create photo mediabar::forwardImg -file $workdir/svg/forward.svg -format {svg -scaletoheight 24}
 		image create photo mediabar::muteImg -file $workdir/svg/mute.svg -format {svg -scaletoheight 24}
 		image create photo mediabar::unmuteImg -file $workdir/svg/unmute.svg -format {svg -scaletoheight 24}
-	
+
 		variable rewindBtn
 		set rewindBtn [button $frame.rewind -image mediabar::rewindImg -command mediabar::rewind -width 30 -height 30]
 		help $rewindBtn balloon [mc prevKeyFrame]
+
+		variable refineLeftBtn
+		set refineLeftBtn [button $frame.refineLeft -image mediabar::refineLeftImg -command mediabar::refineLeft -width 30 -height 30]
+		help $refineLeftBtn balloon [mc refineLeft]
+
+		variable refineRightBtn
+		set refineRightBtn [button $frame.refineRight -image mediabar::refineRightImg -command mediabar::refineRight -width 30 -height 30]
+		help $refineRightBtn balloon [mc refineRight]
 
 		variable forwardBtn
 		set forwardBtn [button $frame.forward -image mediabar::forwardImg -command mediabar::forward -width 30 -height 30]
@@ -52,7 +64,7 @@ namespace eval mediabar {
 		switchPauseBtnMode
 
 		variable timeScl
-		set timeScl [scale $frame.time -orient horizontal -showvalue false -variable mediabar::time -command mediabar::goTo]
+		set timeScl [scale $frame.time -orient horizontal -showvalue false -variable mediabar::time -command mediabar::onTimeScaleChange]
 
 		variable volumeScl
 		set volumeScl [scale $frame.volume -orient horizontal -length 50 -variable mediabar::volume -command mediabar::setVolume]
@@ -68,6 +80,8 @@ namespace eval mediabar {
 		bind . "<Key-KP_Down>" mediabar::rewind
 		bind . "<Key-Up>" mediabar::forward
 		bind . "<Key-KP_Up>" mediabar::forward
+		bind . "<Key-Left>" mediabar::refineLeft
+		bind . "<Key-Right>" mediabar::refineRight
 
 		setEnabled 0
 
@@ -75,29 +89,76 @@ namespace eval mediabar {
 		pack $muteBtn -side right
 		pack $volumeScl -side right
 		pack $forwardBtn -side right
+		pack $refineRightBtn -side right
+		pack $refineLeftBtn -side right
 		pack $rewindBtn -side right
 		pack $timeScl -side left -fill x -expand true
+	}
+
+	proc makePosition {millis {actual ""}} {
+		if {$actual eq ""} {
+			set actual $millis
+		}
+		return [list $millis $actual]
+	}
+
+	proc copyPosition {pos} {
+		return [list [lindex $pos 0] [lindex $pos 1]]
+	}
+
+	proc getRequested {pos} {
+		set req [lindex $pos 0]
+		set act [lindex $pos 1]
+		if {$req < 0} {
+			return $act
+		}
+		return $req
+	}
+
+	proc getActual {pos} {
+		return [lindex $pos 1]
+	}
+
+	proc setActual {pos val} {
+		return [list [lindex $pos 0] $val]
+	}
+
+	proc getCurrentPosition {} {
+		variable time
+		return [makePosition $time]
+	}
+
+	proc updateNavButtons {} {
+		variable mediaEnabled
+		variable pauseBtnState
+		variable rewindBtn
+		variable forwardBtn
+		variable refineLeftBtn
+		variable refineRightBtn
+		if {$mediaEnabled && $pauseBtnState == 1} {
+			set navState "normal"
+		} else {
+			set navState "disabled"
+		}
+		foreach x [list $rewindBtn $forwardBtn $refineLeftBtn $refineRightBtn] {
+			$x config -state $navState
+		}
 	}
 
 	proc switchPauseBtnMode {} {
 		variable pauseBtn
 		variable pauseBtnState
-		variable rewindBtn
-		variable forwardBtn
 		switch -exact -- $pauseBtnState {
 			0 {
-				$pauseBtn config -image mediabar::pauseImg -command {set mediabar::pauseBtnState 1; mediabar::switchPauseBtnMode; player::pause};
+				$pauseBtn config -image mediabar::pauseImg -command {set mediabar::pauseBtnState 1; mediabar::switchPauseBtnMode; player::pause}
 				help $pauseBtn balloon [mc pause]
-				$rewindBtn config -state disabled
-				$forwardBtn config -state disabled
 			}
 			1 {
-				$pauseBtn config -image mediabar::playImg -command {set mediabar::pauseBtnState 0; mediabar::switchPauseBtnMode; player::play};
+				$pauseBtn config -image mediabar::playImg -command {set mediabar::refine ""; set mediabar::pauseBtnState 0; mediabar::switchPauseBtnMode; player::play}
 				help $pauseBtn balloon [mc play]
-				$rewindBtn config -state normal
-				$forwardBtn config -state normal
 			}
 		}
+		updateNavButtons
 	}
 
 	proc switchMuteBtnMode {} {
@@ -105,11 +166,11 @@ namespace eval mediabar {
 		variable muteBtnState
 		switch -exact -- $muteBtnState {
 			0 {
-				$muteBtn config -image mediabar::unmuteImg -command {set mediabar::muteBtnState 1; mediabar::switchMuteBtnMode; player::setMute true};
+				$muteBtn config -image mediabar::unmuteImg -command {set mediabar::muteBtnState 1; mediabar::switchMuteBtnMode; player::setMute true}
 				help $muteBtn balloon [mc mute]
 			}
 			1 {
-				$muteBtn config -image mediabar::muteImg -command {set mediabar::muteBtnState 0; mediabar::switchMuteBtnMode; player::setMute false};
+				$muteBtn config -image mediabar::muteImg -command {set mediabar::muteBtnState 0; mediabar::switchMuteBtnMode; player::setMute false}
 				help $muteBtn balloon [mc unmute]
 			}
 		}
@@ -118,38 +179,165 @@ namespace eval mediabar {
 	proc setTime {value} {
 		variable pauseBtnState
 		if {$pauseBtnState == 0} {
+			variable updatingTimeScale
+			set updatingTimeScale 1
 			variable time
 			set time $value
+			set updatingTimeScale 0
 		}
 	}
 
-	proc rewind {} {
-		variable time
+	proc onTimeScaleChange {millis} {
+		variable updatingTimeScale
+		if {$updatingTimeScale} {
+			return
+		}
+		variable refine
+		set refine ""
+		goTo $millis
+	}
+
+	proc previousKeyFrame {t} {
 		variable keyFrames
-		set t $time
+		if {[llength $keyFrames] == 0} {
+			return ""
+		}
 		lassign [getInterval $t] left right
 		if {$left < 0} {
-			return
+			return ""
 		}
 		if {[lindex $keyFrames $left] < $t} {
 			set i $left
 		} elseif {$left > 0} {
 			set i [expr $left - 1]
 		} else {
+			return ""
+		}
+		return [lindex $keyFrames $i]
+	}
+
+	proc nextKeyFrame {t} {
+		variable keyFrames
+		if {[llength $keyFrames] == 0} {
+			return ""
+		}
+		lassign [getInterval $t] left right
+		if {$right < 0} {
+			return ""
+		}
+		return [lindex $keyFrames $right]
+	}
+
+	proc rewind {} {
+		set prev [previousKeyFrame [getActual [getCurrentPosition]]]
+		if {$prev eq ""} {
 			return
 		}
-		goTo [lindex $keyFrames $i]
+		variable refine
+		set refine ""
+		goTo $prev
 	}
 
 	proc forward {} {
-		variable time
-		variable keyFrames
-		set t $time
-		lassign [getInterval $t] left right
-		if {$right >= 0} {
-			set next [lindex $keyFrames $right]
-			goTo $next
+		set next [nextKeyFrame [getActual [getCurrentPosition]]]
+		if {$next eq ""} {
+			return
 		}
+		variable refine
+		set refine ""
+		goTo $next
+	}
+
+	proc refineLeft {} {
+		variable refine
+		if {$refine eq ""} {
+			set r [copyPosition [getCurrentPosition]]
+			set prev [previousKeyFrame [getActual $r]]
+			if {$prev eq ""} {
+				set l [makePosition 0]
+			} else {
+				set l [makePosition $prev]
+			}
+			set refine [list $l $r]
+		}
+		refineToMidpoint 1
+	}
+
+	proc refineRight {} {
+		variable refine
+		variable duration
+		if {$refine eq ""} {
+			set l [copyPosition [getCurrentPosition]]
+			set next [nextKeyFrame [getActual $l]]
+			if {$next eq ""} {
+				set r [makePosition $duration]
+			} else {
+				set r [makePosition $next]
+			}
+			set refine [list $l $r]
+		}
+		refineToMidpoint 0
+	}
+
+	proc refineContains {refineState pos} {
+		set act [getActual $pos]
+		set l [lindex $refineState 0]
+		set r [lindex $refineState 1]
+		return [expr {$act >= [getActual $l] && $act <= [getActual $r]}]
+	}
+
+	proc refineIsDegenerate {refineState} {
+		set l [lindex $refineState 0]
+		set r [lindex $refineState 1]
+		return [expr {[getRequested $l] == [getRequested $r]}]
+	}
+
+	proc refineToMidpoint {onRefineLeft} {
+		variable refine
+		set startPosition [copyPosition [getCurrentPosition]]
+		if {![refineContains $refine $startPosition]} {
+			return
+		}
+		if {[refineIsDegenerate $refine]} {
+			return
+		}
+		set l [lindex $refine 0]
+		set r [lindex $refine 1]
+		if {$onRefineLeft} {
+			set l [lindex $refine 0]
+			set r $startPosition
+		} else {
+			set l $startPosition
+			set r [lindex $refine 1]
+		}
+		set c [expr {([getRequested $l] + [getRequested $r]) / 2}]
+		if {[getRequested $l] < $c} {
+			goTo $c
+		} elseif {$onRefineLeft} {
+			goTo [getRequested $l]
+			set l [setActual $l [getActual [getCurrentPosition]]]
+		} else {
+			goTo [getRequested $r]
+			set r [setActual $r [getActual [getCurrentPosition]]]
+		}
+		set newPosition [copyPosition [getCurrentPosition]]
+		if {[getActual $startPosition] == [getActual $newPosition]} {
+			if {$onRefineLeft} {
+				goTo [getRequested $l]
+				set l [setActual $l [getActual [getCurrentPosition]]]
+			} else {
+				goTo [getRequested $r]
+				set r [setActual $r [getActual [getCurrentPosition]]]
+			}
+			set newPosition [copyPosition [getCurrentPosition]]
+		}
+		if {[getActual $l] > [getActual $newPosition]} {
+			set l $newPosition
+		}
+		if {[getActual $r] < [getActual $newPosition]} {
+			set r $newPosition
+		}
+		set refine [list $l $r]
 	}
 
 	proc getInterval {t} {
@@ -174,7 +362,6 @@ namespace eval mediabar {
 			return [list $left [expr $left + 1]]
 		}
 		while {[expr $right - $left] > 1} {
-			#set middle [expr int(floor(($right + $left) / 2))]
 			set middle [expr int(($right + $left) / 2)]
 			set middleValue [lindex $keyFrames $middle]
 			if {$middleValue < $t} {
@@ -195,8 +382,11 @@ namespace eval mediabar {
 		variable pauseBtnState
 		if {$pauseBtnState == 1} {
 			player::goTo $millis
+			variable updatingTimeScale
+			set updatingTimeScale 1
 			variable time
 			set time $millis
+			set updatingTimeScale 0
 		}
 	}
 
@@ -204,18 +394,27 @@ namespace eval mediabar {
 		player::setVolume $vol
 	}
 
-	proc reset {duration paused millis vol mute frames} {
+	proc reset {aDuration paused millis vol mute frames} {
+		variable duration
+		set duration $aDuration
 		variable timeScl
-		$timeScl config -from 0 -to $duration
+		$timeScl config -from 0 -to $aDuration
 		variable pauseBtnState
 		if {$paused} {
 			set pauseBtnState 1
 		} else {
 			set pauseBtnState 0
 		}
+		variable refine
+		set refine ""
+		variable mediaEnabled
+		set mediaEnabled 1
 		switchPauseBtnMode
+		variable updatingTimeScale
+		set updatingTimeScale 1
 		variable time
 		set time $millis
+		set updatingTimeScale 0
 		variable volume
 		set volume $vol
 		variable muteBtnState
@@ -230,10 +429,10 @@ namespace eval mediabar {
 	}
 
 	proc setEnabled {value} {
+		variable mediaEnabled
+		set mediaEnabled $value
 		variable pauseBtn
 		variable timeScl
-		variable rewindBtn
-		variable forwardBtn
 		variable volumeScl
 		variable muteBtn
 		if {$value > 0} {
@@ -241,9 +440,9 @@ namespace eval mediabar {
 		} else {
 			set state "disabled"
 		}
-		set children [list $pauseBtn $timeScl $rewindBtn $forwardBtn $volumeScl $muteBtn]
-		foreach x $children {
+		foreach x [list $pauseBtn $timeScl $volumeScl $muteBtn] {
 			$x config -state $state
 		}
+		updateNavButtons
 	}
 }

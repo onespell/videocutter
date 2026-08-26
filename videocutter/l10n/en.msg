@@ -9,6 +9,8 @@ mcset en play play
 mcset en pause pause
 mcset en prevKeyFrame "prev. key frame"
 mcset en nextKeyFrame "next key frame"
+mcset en refineLeft "refine left"
+mcset en refineRight "refine right"
 mcset en mute mute
 mcset en unmute unmute
 mcset en freezeFrame freeze-frame
