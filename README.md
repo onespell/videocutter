@@ -1,46 +1,25 @@
 # videocutter
+This is an application for taking clips or frames from video file. It is written in Tcl/Tk and uses mplayer and ffmpeg under the hood.
 
-Application for taking clips or frames from a video file.
-
-## Prerequisites
-
-* Java 17 or newer
-* Optional: system `ffmpeg` on `PATH` (or `FFMPEG` env) for fast stream-copy clips
-
-## Build
-
-```
-./gradlew distZip
-```
-
-or
-
-```
-./gradlew distTar
-```
-
-## Install
-
-Unpack `build/distributions/videocutter-2.0.0.zip` to the desired location.
-
-Edit `conf/settings.properties`:
-
-* `locale` — language of interface (`ru` or `en`)
-* `numOfProcessors` — thread hint for decode/encode
-* `initialDir` — file dialog start directory
-* `defaultVolume` — default volume level (0–100)
-* `muteOnStart` — if video preview should be muted by default (`true` or `false`)
-
-Logging is configured via `conf/log4j2.xml`.
-
-## Launch
-
-```
-videocutter/run /path/to/video.mkv
-```
+## How to install
+* Prerequisites: ffmpeg (https://ffmpeg.org), ffprobe (https://ffmpeg.org/ffprobe.html), MPlayer (http://www.mplayerhq.hu) or mpv (https://mpv.io), tcl 8.6, tk 8.6, tksvg (https://wiki.tcl-lang.org/page/tksvg), BWidget (https://wiki.tcl-lang.org/page/BWidget), tcllib (https://www.tcl.tk/software/tcllib/).
+* Copy directory "videocutter" to any place on local file system.
+* Correct file settings.tcl:
+  * player - "mpv" or "mplayer" (mpv is more reliable, but it's available only on Unix-like systems)
+  * imageTool - method to take snapshots, possible values: "ffmpeg", "mpv" or "cwebp" (use mpv to take snapshot and cwebp to convert it to webp format); "ffmpeg" is slowest
+  * locale - interface language ("ru", "en")
+  * numOfProcessors - processors number for the ffprobe and ffmpeg "-threads" option
+  * ffprobePath - path to ffprobe
+  * ffmpegPath - path to ffmpeg
+  * mplayerPath - path to mplayer
+  * logPath - path to log file
+  * initialDir - directory to open file from the menu
+  * ffmpegReport - "on" to use ffmpeg "-report" option
+  * defaultVolume - volume level (0-100)
+  * muteOnStart - "true" to mute on file opening
+* To launch videocutter execute vc.tcl (or you can edit and use script vc.sh).
 
 ## How to use
-
 * Launch application without arguments (or with a video file name as the argument).
 * File → Open (Ctrl-O) to open a video.
 * Navigating through the video, use tools on the right panel to create freeze-frame or clip jobs.
@@ -63,3 +42,9 @@ videocutter/run /path/to/video.mkv
 * 8 - input jobs manually (the same syntax as in log file)
 * 9 - jobs list
 * 10 - execute jobs (check "dry run" to just preview commands)
+
+## Files
+* vc.tcl - the main tcl script
+* settings.tcl - application settings
+* l10n/ - localization data
+* svg/ - icons
